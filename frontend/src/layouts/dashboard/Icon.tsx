@@ -30,6 +30,31 @@ const PATHS: Record<string, string> = {
     '<circle cx="6" cy="19" r="2.5"/><circle cx="18" cy="5" r="2.5"/><path d="M8 17.5h6a3 3 0 0 0 0-6H9a3 3 0 0 1 0-6h7"/>',
   shieldAlert:
     '<path d="M12 2 4 6v6c0 5 3.4 8.5 8 10 4.6-1.5 8-5 8-10V6l-8-4Z"/><path d="M12 8v4M12 15h.01"/>',
+  grid: '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
+  list: '<path d="M8 6h13M8 12h13M8 18h13"/><path d="M3 6h.01M3 12h.01M3 18h.01"/>',
+  menu: '<path d="M4 6h16M4 12h16M4 18h16"/>',
+  external:
+    '<path d="M14 4h6v6"/><path d="M20 4 10 14"/><path d="M19 13v6a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h6"/>',
+  chevronRight: '<path d="m9 6 6 6-6 6"/>',
+  arrowLeft: '<path d="M19 12H5M12 19l-7-7 7-7"/>',
+  arrowUpRight: '<path d="M7 17 17 7M8 7h9v9"/>',
+  download:
+    '<path d="M12 3v12M7 10l5 5 5-5"/><path d="M5 21h14"/>',
+  calendar:
+    '<rect x="3" y="4.5" width="18" height="16" rx="2"/><path d="M3 9h18M8 2.5v4M16 2.5v4"/>',
+  users:
+    '<circle cx="9" cy="8" r="3.2"/><path d="M3 20a6 6 0 0 1 12 0"/><path d="M16 6.5a3 3 0 0 1 0 5.6M21 20a5.5 5.5 0 0 0-4-5.3"/>',
+  sliders:
+    '<path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h9M17 18h3"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="15" cy="18" r="2"/>',
+  info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/>',
+  dot: '<circle cx="12" cy="12" r="3.5"/>',
+  inbox:
+    '<path d="M3 12h4l2 3h6l2-3h4"/><path d="M5 5h14l2 7v6a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-6l2-7Z"/>',
+  pencil: '<path d="M12 20h9"/><path d="M16.5 3.5 20 7l-11 11H5v-4l11.5-11.5Z"/>',
+  thumbUp:
+    '<path d="M7 10v10H4a1 1 0 0 1-1-1v-8a1 1 0 0 1 1-1h3Zm0 0 4-7a2 2 0 0 1 3.6 1.3L14 10h4.5a2 2 0 0 1 2 2.4l-1.2 6A2 2 0 0 1 17.3 20H7"/>',
+  thumbDown:
+    '<path d="M17 14V4h3a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1h-3Zm0 0-4 7a2 2 0 0 1-3.6-1.3L10 14H5.5a2 2 0 0 1-2-2.4l1.2-6A2 2 0 0 1 6.7 4H17"/>',
 };
 
 interface Props {

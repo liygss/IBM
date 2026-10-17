@@ -1,6 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { fetchReplay, type ReplayEvent, type Source } from "@/lib/trailguardApi";
 import Icon from "./Icon";
+import { Badge, Button, Card, Segmented } from "./primitives";
+import { cn } from "./ui";
 
 const EVENT_TONE: Record<string, string> = {
   logon: "text-emerald-300",
@@ -14,10 +16,10 @@ const EVENT_TONE: Record<string, string> = {
 };
 
 const SPEEDS = [
-  { label: "0.5×", ms: 700 },
-  { label: "1×", ms: 350 },
-  { label: "2×", ms: 175 },
-  { label: "4×", ms: 90 },
+  { key: "0", label: "0.5×", ms: 700 },
+  { key: "1", label: "1×", ms: 350 },
+  { key: "2", label: "2×", ms: 175 },
+  { key: "3", label: "4×", ms: 90 },
 ];
 
 export default function Replay() {
@@ -27,10 +29,10 @@ export default function Replay() {
   const [loading, setLoading] = useState(true);
   const [index, setIndex] = useState(0);
   const [playing, setPlaying] = useState(false);
-  const [speed, setSpeed] = useState(1);
+  const [speed, setSpeed] = useState("1");
   const timer = useRef<number | null>(null);
 
-  useEffect(() => {
+  const load = useCallback(() => {
     let alive = true;
     fetchReplay(200).then((res) => {
       if (!alive) return;
@@ -44,11 +46,23 @@ export default function Replay() {
     };
   }, []);
 
+  useEffect(() => {
+    const cleanup = load();
+    const onRefresh = () => load();
+    window.addEventListener("trailguard:refresh", onRefresh);
+    return () => {
+      cleanup();
+      window.removeEventListener("trailguard:refresh", onRefresh);
+    };
+  }, [load]);
+
   const stop = useCallback(() => {
     if (timer.current) window.clearInterval(timer.current);
     timer.current = null;
     setPlaying(false);
   }, []);
+
+  const speedIdx = SPEEDS.findIndex((s) => s.key === speed);
 
   useEffect(() => {
     if (!playing) return;
@@ -60,11 +74,11 @@ export default function Replay() {
         }
         return i + 1;
       });
-    }, SPEEDS[speed].ms);
+    }, SPEEDS[speedIdx].ms);
     return () => {
       if (timer.current) window.clearInterval(timer.current);
     };
-  }, [playing, events.length, stop, speed]);
+  }, [playing, events.length, stop, speedIdx]);
 
   const visible = useMemo(() => events.slice(0, index), [events, index]);
   const done = index >= events.length && events.length > 0;
@@ -81,106 +95,62 @@ export default function Replay() {
   };
 
   return (
-    <div className="mx-auto max-w-4xl px-6 py-10">
-      {/* Header */}
-      <header className="relative mb-6 overflow-hidden rounded-3xl border border-border bg-light p-8">
-        <div
-          className="absolute -right-16 -top-20 size-64 rounded-full blur-3xl"
-          style={{
-            background:
-              "radial-gradient(circle, color-mix(in srgb, var(--color-secondary) 40%, transparent) 0%, transparent 70%)",
-          }}
-          aria-hidden="true"
-        />
-        <div className="relative flex flex-wrap items-end gap-5">
-          <div className="mr-auto">
-            <p className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-secondary">
-              <Icon name="play" className="size-4" />
-              Simulasi aliran event
-            </p>
-            <h1 className="font-secondary text-h3 font-bold text-white">Replay</h1>
-            <p className="mt-2 max-w-xl text-sm text-text">
-              Pemutaran ulang log historis — bukan streaming nyata.
-            </p>
-          </div>
-          <div className="flex flex-wrap items-center gap-3">
-            <span className="rounded-full border border-secondary/40 bg-secondary/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-secondary">
-              REPLAY
-            </span>
-            <span
-              className={`rounded-full border px-3 py-1 text-xs font-medium ${
-                source === "live"
-                  ? "border-emerald-400/30 bg-emerald-400/10 text-emerald-300"
-                  : "border-amber-400/30 bg-amber-400/10 text-amber-300"
-              }`}
-            >
-              {source === "live" ? "Live · Flask API" : "Pratinjau · data contoh"}
-            </span>
-            <a
-              href="/dashboard"
-              className="inline-flex items-center gap-1.5 rounded-full border border-primary/40 bg-primary/10 px-4 py-1.5 text-sm font-medium text-primary transition hover:bg-primary/20"
-            >
-              ← Dashboard
-            </a>
-          </div>
-        </div>
-      </header>
-
-      <div className="overflow-hidden rounded-3xl border border-border bg-light">
-        {/* Controls */}
+    <div className="space-y-5">
+      <Card className="dr-in overflow-hidden">
+        {/* toolbar */}
         <div className="flex flex-wrap items-center gap-3 border-b border-border px-5 py-3">
-          <button
-            type="button"
-            onClick={playing ? stop : play}
-            disabled={loading || events.length === 0}
-            className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-1.5 text-sm font-semibold text-body transition hover:brightness-110 disabled:opacity-40"
-          >
-            <Icon name={playing ? "x" : "play"} className="size-4" />
-            {playing ? "Jeda" : done ? "Ulang" : "Putar"}
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              stop();
-              setIndex(events.length);
-            }}
-            disabled={loading || events.length === 0}
-            className="rounded-full border border-border px-4 py-1.5 text-sm text-text transition hover:text-white disabled:opacity-40"
-          >
-            Lompat ke akhir
-          </button>
+          <Badge tone="secondary">REPLAY</Badge>
+          <Badge tone={source === "live" ? "emerald" : "amber"}>
+            <span
+              className={cn(
+                "size-1.5 rounded-full",
+                source === "live" ? "animate-pulse bg-emerald-400" : "bg-amber-400",
+              )}
+            />
+            {source === "live" ? "Live · Flask API" : "Pratinjau · contoh"}
+          </Badge>
 
-          <div className="flex rounded-full border border-border bg-body/40 p-0.5">
-            {SPEEDS.map((s, i) => (
-              <button
-                key={s.label}
-                type="button"
-                onClick={() => setSpeed(i)}
-                className={`rounded-full px-2.5 py-1 text-[0.7rem] font-medium transition ${
-                  speed === i ? "bg-primary/20 text-primary" : "text-text-dark hover:text-text"
-                }`}
-              >
-                {s.label}
-              </button>
-            ))}
+          <div className="ml-auto flex flex-wrap items-center gap-3">
+            <Button
+              variant="primary"
+              size="sm"
+              icon={playing ? "x" : "play"}
+              disabled={loading || events.length === 0}
+              onClick={playing ? stop : play}
+            >
+              {playing ? "Jeda" : done ? "Ulang" : "Putar"}
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              disabled={loading || events.length === 0}
+              onClick={() => {
+                stop();
+                setIndex(events.length);
+              }}
+            >
+              Lompat ke akhir
+            </Button>
+            <Segmented
+              value={speed}
+              onChange={setSpeed}
+              options={SPEEDS.map((s) => ({ key: s.key, label: s.label }))}
+            />
+            <span className="font-mono text-xs text-text-dark">
+              {index}/{events.length} event
+            </span>
           </div>
-
-          <span className="ml-auto font-mono text-xs text-text-dark">
-            {index}/{events.length} event
-          </span>
         </div>
 
-        {/* Progress */}
+        {/* progress */}
         <div className="h-1 w-full bg-white/5">
           <div
             className="h-full bg-gradient-to-r from-primary to-secondary transition-[width] duration-200"
-            style={{
-              width: `${events.length ? (index / events.length) * 100 : 0}%`,
-            }}
+            style={{ width: `${events.length ? (index / events.length) * 100 : 0}%` }}
           />
         </div>
 
-        {/* Source counters */}
+        {/* source counters */}
         {!loading && events.length > 0 && (
           <div className="flex flex-wrap gap-2 border-b border-border px-5 py-3">
             {counts.map(([src, n]) => (
@@ -195,18 +165,22 @@ export default function Replay() {
           </div>
         )}
 
-        {/* Feed */}
-        <div className="p-5">
+        {/* feed */}
+        <div className="dr-scroll max-h-[60vh] overflow-y-auto p-5">
           {loading ? (
-            <div className="animate-pulse space-y-2">
-              {Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="h-11 rounded-xl bg-body/60" />
+            <div className="space-y-2">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <div key={i} className="h-11 animate-pulse rounded-xl bg-white/[0.04]" />
               ))}
             </div>
           ) : events.length === 0 ? (
-            <div className="rounded-2xl border border-border bg-body/40 p-10 text-center">
-              <Icon name="route" className="mx-auto mb-3 size-10 text-primary/60" />
-              <p className="text-text">Belum ada event untuk diputar.</p>
+            <div className="flex flex-col items-center px-6 py-14 text-center">
+              <span className="mb-4 grid size-14 place-items-center rounded-2xl border border-border bg-body/50 text-primary/70">
+                <Icon name="route" className="size-6" />
+              </span>
+              <p className="font-secondary text-base font-bold text-white">
+                Belum ada event untuk diputar
+              </p>
               <code className="mt-3 inline-block rounded-lg bg-body px-4 py-2 font-mono text-sm text-primary">
                 make toy
               </code>
@@ -227,7 +201,7 @@ export default function Replay() {
                           {e.ts.slice(0, 10)}
                         </li>
                       )}
-                      <li className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-xl border border-border bg-body/40 px-4 py-2.5 text-sm">
+                      <li className="dr-in flex flex-wrap items-center gap-x-3 gap-y-1 rounded-xl border border-border bg-body/40 px-4 py-2.5 text-sm">
                         <span className="font-mono text-xs text-text-dark">
                           {e.ts.slice(11)}
                         </span>
@@ -235,9 +209,10 @@ export default function Replay() {
                           user {e.user.slice(0, 8)}
                         </span>
                         <span
-                          className={`font-mono text-xs font-semibold ${
-                            EVENT_TONE[e.action] ?? "text-text"
-                          }`}
+                          className={cn(
+                            "font-mono text-xs font-semibold",
+                            EVENT_TONE[e.action] ?? "text-text",
+                          )}
                         >
                           {e.source}/{e.action}
                         </span>
@@ -258,9 +233,9 @@ export default function Replay() {
             </ol>
           )}
         </div>
-      </div>
+      </Card>
 
-      <div className="mt-5 space-y-2 text-xs text-text-dark">
+      <div className="space-y-2 text-xs text-text-dark">
         <p>Event ter-pseudonim (Kontrak #1). ID asli tidak pernah ditampilkan.</p>
         {!available && !loading && (
           <p>

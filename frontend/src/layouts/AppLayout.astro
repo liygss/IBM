@@ -1,0 +1,23 @@
+---
+import Head from "@/layouts/Head.astro";
+import AppShell from "@/layouts/dashboard/AppShell.astro";
+
+export interface Props {
+  title?: string;
+  description?: string;
+  pageTitle?: string;
+  pageSubtitle?: string;
+}
+
+const { title, description, pageTitle, pageSubtitle } = Astro.props;
+---
+
+<!doctype html>
+<html lang="id">
+  <Head title={title} description={description} animations={false} />
+  <body class="bg-body text-text">
+    <AppShell pageTitle={pageTitle} pageSubtitle={pageSubtitle}>
+      <slot />
+    </AppShell>
+  </body>
+</html>

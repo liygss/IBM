@@ -76,3 +76,49 @@ export const RISK_TEXT: Record<RiskBand, string> = {
 export function riskPct(risk: number): number {
   return Math.max(0, Math.min(100, Math.round(risk * 100)));
 }
+
+/** Gabung className, abaikan nilai falsy. */
+export function cn(...parts: Array<string | false | null | undefined>): string {
+  return parts.filter(Boolean).join(" ");
+}
+
+export const RISK_LABEL: Record<RiskBand, string> = {
+  high: "kritis",
+  mid: "sedang",
+  low: "rendah",
+};
+
+const BULAN = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "Mei",
+  "Jun",
+  "Jul",
+  "Agu",
+  "Sep",
+  "Okt",
+  "Nov",
+  "Des",
+];
+
+/** "2010-03-03" → "3 Mar 2010" */
+export function fmtDate(day: string): string {
+  const [y, m, d] = day.split("-").map(Number);
+  if (!y || !m || !d) return day;
+  return `${d} ${BULAN[m - 1]} ${y}`;
+}
+
+/** "2010-03-03" → "3 Mar" */
+export function fmtShortDate(day: string): string {
+  const [, m, d] = day.split("-").map(Number);
+  if (!m || !d) return day;
+  return `${d} ${BULAN[m - 1]}`;
+}
+
+/** Boolean → label status approval. */
+export function approvalLabel(requires: boolean): string {
+  return requires ? "Perlu persetujuan" : "Otomatis";
+}
+

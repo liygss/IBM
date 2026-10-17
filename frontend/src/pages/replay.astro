@@ -1,13 +1,13 @@
 ---
-import Base from "@/layouts/Base.astro";
+import AppLayout from "@/layouts/AppLayout.astro";
 import Replay from "@/layouts/dashboard/Replay";
 ---
 
-<Base
-  title="Replay"
+<AppLayout
+  title="Replay · Dashboard TrailGuard"
   description="Pemutaran ulang log historis TrailGuard sebagai aliran event (replay, bukan streaming nyata)."
+  pageTitle="Replay"
+  pageSubtitle="Pemutaran ulang log historis — bukan streaming nyata"
 >
-  <section class="pt-28 pb-16">
-    <Replay client:load />
-  </section>
-</Base>
+  <Replay client:load />
+</AppLayout>
