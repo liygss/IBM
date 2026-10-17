@@ -1,0 +1,13 @@
+---
+import Base from "@/layouts/Base.astro";
+import Replay from "@/layouts/dashboard/Replay";
+---
+
+<Base
+  title="Replay"
+  description="Pemutaran ulang log historis TrailGuard sebagai aliran event (replay, bukan streaming nyata)."
+>
+  <section class="pt-28 pb-16">
+    <Replay client:load />
+  </section>
+</Base>

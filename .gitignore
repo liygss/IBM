@@ -1,0 +1,29 @@
+# macOS
+.DS_Store
+
+# Editor
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# Node / frontend build
+node_modules/
+dist/
+.astro/
+.output/
+*.log
+
+# Python / backend
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Secrets & data (jangan pernah di-commit)
+.env
+backend/data/raw/*
+backend/data/interim/*
+backend/data/processed/*
+backend/models/*.joblib
+backend/outputs/*.jsonl

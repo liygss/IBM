@@ -1,0 +1,13 @@
+---
+import Base from "@/layouts/Base.astro";
+import Dashboard from "@/layouts/dashboard/Dashboard";
+---
+
+<Base
+  title="Dashboard"
+  description="Dashboard deteksi insider-threat TrailGuard: alert, tier, alasan, metrik, dan persetujuan manusia."
+>
+  <section class="pt-28 pb-16">
+    <Dashboard client:load />
+  </section>
+</Base>

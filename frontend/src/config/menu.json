@@ -1,0 +1,33 @@
+{
+  "main": [
+    { "name": "Alur", "url": "#alur" },
+    { "name": "Scope", "url": "#scope" },
+    { "name": "Model", "url": "#fitur" },
+    { "name": "Penjelasan", "url": "#explain" },
+    { "name": "Dashboard", "url": "/dashboard" },
+    { "name": "Replay", "url": "/replay" }
+  ],
+  "footer_col_1_title": "Jelajahi",
+  "footer_col_2_title": "Sistem",
+  "footer_col_3_title": "Proyek",
+  "footer_primary": [
+    { "name": "Alur sistem", "url": "#alur" },
+    { "name": "Prinsip kerja", "url": "#prinsip" },
+    { "name": "Scope (MoSCoW)", "url": "#scope" },
+    { "name": "Fitur & model", "url": "#fitur" }
+  ],
+  "footer_resource": [
+    { "name": "Penjelasan & klaim", "url": "#explain" },
+    { "name": "Policy 3 tier", "url": "#policy" },
+    { "name": "Dashboard", "url": "#dashboard" },
+    { "name": "Dataset", "url": "#dataset" },
+    { "name": "Deployment", "url": "#deploy" }
+  ],
+  "footer_legal": [
+    { "name": "Bukti LinuxONE", "url": "#bukti" },
+    { "name": "Tim & peran", "url": "#tim" },
+    { "name": "Tahapan & Gate", "url": "#tahapan" },
+    { "name": "Risiko", "url": "#risiko" },
+    { "name": "Definition of Done", "url": "#dod" }
+  ]
+}

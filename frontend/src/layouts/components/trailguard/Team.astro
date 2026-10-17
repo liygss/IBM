@@ -1,0 +1,77 @@
+---
+import { teamRoles } from "@/data/trailguard";
+import Icon from "./Icon.astro";
+import SectionHeading from "./SectionHeading.astro";
+---
+
+<section id="tim" class="section scroll-mt-24">
+  <div class="container">
+    <SectionHeading
+      badge="Tim & tanggung jawab"
+      title='6 orang, 3 grup, <strong>kepemilikan file jelas</strong>'
+      subtitle="Setiap grup berisi 2 peran berbeda yang saling menjadi cadangan. Hindari bentrok di Git dengan hanya mengubah file milik sendiri."
+    />
+
+    <div class="grid gap-5 lg:grid-cols-3">
+      {
+        teamRoles.map((g) => (
+          <article class="flex flex-col rounded-3xl border border-border bg-light p-7">
+            <div class="mb-6 flex items-center gap-4">
+              <span class="flex size-11 items-center justify-center rounded-xl bg-primary/12 text-primary">
+                <Icon name={g.icon} class="size-5.5" />
+              </span>
+              <h3 class="font-secondary text-h6 font-bold text-white">
+                {g.group}
+              </h3>
+            </div>
+            <div class="space-y-5">
+              {g.roles.map((r) => (
+                <div class="border-t border-border pt-4 first:border-0 first:pt-0">
+                  <p class="font-mono text-sm font-semibold text-primary">
+                    {r.name}
+                  </p>
+                  <p class="mt-1 text-sm leading-6 text-text">{r.focus}</p>
+                </div>
+              ))}
+            </div>
+          </article>
+        ))
+      }
+    </div>
+
+    <div class="mt-10 grid gap-5 md:grid-cols-3">
+      <div class="rounded-2xl border border-border bg-light/60 p-6">
+        <h4 class="mb-2 font-secondary text-h6 font-bold text-white">
+          Branch per peran
+        </h4>
+        <p class="text-sm leading-6 text-text">
+          <code class="font-mono text-xs text-text-light">a-platform/…</code>{" "}
+          <code class="font-mono text-xs text-text-light">b-model/…</code>{" "}
+          <code class="font-mono text-xs text-text-light">c-lead/…</code> — merge
+          ke <code class="font-mono text-xs">main</code> lewat PR kecil, direview
+          grup lain.
+        </p>
+      </div>
+      <div class="rounded-2xl border border-border bg-light/60 p-6">
+        <h4 class="mb-2 font-secondary text-h6 font-bold text-white">
+          main selalu hijau
+        </h4>
+        <p class="text-sm leading-6 text-text">
+          Sebelum merge, <code class="font-mono text-xs text-text-light">make toy</code>{" "}
+          harus sukses. Jangan commit data besar,{" "}
+          <code class="font-mono text-xs">.env</code>, atau model{" "}
+          <code class="font-mono text-xs">.joblib</code>.
+        </p>
+      </div>
+      <div class="rounded-2xl border border-border bg-light/60 p-6">
+        <h4 class="mb-2 font-secondary text-h6 font-bold text-white">
+          PM = menjaga Gate
+        </h4>
+        <p class="text-sm leading-6 text-text">
+          Stand-up dikirim ke PM di tiap Gate & Checkpoint LANL; Decision Log
+          menjadi memori keputusan proyek.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
