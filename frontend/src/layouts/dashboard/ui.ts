@@ -2,6 +2,7 @@ export interface TierStyle {
   bar: string;
   badge: string;
   text: string;
+  label: string;
 }
 
 export const TIER_STYLE: Record<number, TierStyle> = {
@@ -9,16 +10,19 @@ export const TIER_STYLE: Record<number, TierStyle> = {
     bar: "border-l-zinc-500",
     badge: "bg-zinc-500/15 text-zinc-300",
     text: "text-zinc-300",
+    label: "log_only",
   },
   2: {
     bar: "border-l-amber-400",
     badge: "bg-amber-400/15 text-amber-300",
     text: "text-amber-300",
+    label: "step_up_verification",
   },
   3: {
     bar: "border-l-secondary",
     badge: "bg-secondary/15 text-secondary",
     text: "text-secondary",
+    label: "analyst_ticket",
   },
 };
 
@@ -46,4 +50,29 @@ export function fmtPct(v: number | undefined | null): string {
 
 export function fmtNum(v: number | undefined | null): string {
   return typeof v === "number" ? v.toLocaleString("id-ID") : "—";
+}
+
+export type RiskBand = "high" | "mid" | "low";
+
+export function riskBand(risk: number): RiskBand {
+  if (risk >= 0.85) return "high";
+  if (risk >= 0.6) return "mid";
+  return "low";
+}
+
+/** Warna aksen hex, untuk SVG & teks. */
+export const RISK_COLOR: Record<RiskBand, string> = {
+  high: "#FF5353",
+  mid: "#fbbf24",
+  low: "#937AFF",
+};
+
+export const RISK_TEXT: Record<RiskBand, string> = {
+  high: "text-secondary",
+  mid: "text-amber-300",
+  low: "text-primary",
+};
+
+export function riskPct(risk: number): number {
+  return Math.max(0, Math.min(100, Math.round(risk * 100)));
 }
