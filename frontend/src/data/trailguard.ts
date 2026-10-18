@@ -321,8 +321,8 @@ export const decisions: Decision[] = [
   },
   {
     id: "D3",
-    decision: "Supervised = HistGradientBoostingClassifier (sklearn)",
-    reason: "No extra dependencies; light enough for LinuxONE.",
+    decision: "Supervised = HistGradientBoostingClassifier (sklearn); fallback GradientBoostingClassifier",
+    reason: "No extra dependencies; light enough for LinuxONE. Older sklearn builds (e.g. s390x apt 0.23) lack HGB — the actual model used is recorded in metrics (sup_model).",
   },
   {
     id: "D4",
@@ -403,7 +403,7 @@ export interface ModelFact {
 
 export const modelFacts: ModelFact[] = [
   { label: "Split", value: "Temporal (not random) — 65% train / 35% test", icon: "clock" },
-  { label: "Supervised", value: "HistGradientBoostingClassifier + class weights", icon: "brain" },
+  { label: "Supervised", value: "HistGradientBoostingClassifier + class weights (fallback: GradientBoostingClassifier when HGB is unavailable)", icon: "brain" },
   { label: "Anomaly", value: "IsolationForest, trained on normal behavior", icon: "radar" },
   { label: "Score blend", value: "risk = 0.6 · p_supervised + 0.4 · p_anomaly", icon: "merge" },
   { label: "Evaluation", value: "Alert budget 5/day · precision/recall · median days-to-detection", icon: "gauge" },
