@@ -244,3 +244,53 @@ export async function postDecision(
     return { ok: false, offline: true };
   }
 }
+
+// ─── Streaming replay (SSE) ────────────────────────────────────────────────
+
+export interface StreamHandlers {
+  onEvent?: (e: ReplayEvent) => void;
+  onAlert?: (a: Alert) => void;
+  onEnd?: () => void;
+  onError?: () => void;
+}
+
+/**
+ * Buka stream SSE /api/replay/stream (dipace server, memakai replay() backend).
+ * Mengembalikan fungsi penutup. Fallback: bila API mati, pemanggil beralih ke
+ * fetchReplay() + timer klien (mode pratinjau).
+ */
+export function openReplayStream(
+  opts: { speedup?: number; limit?: number },
+  handlers: StreamHandlers,
+): () => void {
+  const speedup = opts.speedup ?? 100;
+  const limit = opts.limit ?? 1000;
+  const es = new EventSource(
+    `${API_BASE}/api/replay/stream?speedup=${speedup}&limit=${limit}`,
+  );
+  es.addEventListener("event", (ev) => {
+    try {
+      handlers.onEvent?.(JSON.parse((ev as MessageEvent).data) as ReplayEvent);
+    } catch {
+      /* ignore */
+    }
+  });
+  es.addEventListener("alert", (ev) => {
+    try {
+      handlers.onAlert?.(JSON.parse((ev as MessageEvent).data) as Alert);
+    } catch {
+      /* ignore */
+    }
+  });
+  es.addEventListener("end", () => {
+    es.close();
+    handlers.onEnd?.();
+  });
+  es.onerror = () => {
+    // EventSource reconnect otomatis -> restart replay dari awal tiap 3 dtk.
+    // Tutup agar tidak membanjiri; UI memakai fallback pratinjau bila perlu.
+    es.close();
+    handlers.onError?.();
+  };
+  return () => es.close();
+}

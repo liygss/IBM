@@ -10,17 +10,20 @@ Endpoint:
   POST /api/decision      catat keputusan manusia (approve/reject) -> outputs/decisions.jsonl
   POST /api/score         body {"features": {...}} -> {risk, tier, ...}
   GET  /api/replay        aliran event (Kontrak #1) untuk halaman replay  ?limit=N
+  GET  /api/replay/stream SSE: replay() sebagai stream — ?speedup=&limit=&alerts_only=1
 """
-import csv
-import gzip
 import json
+import math
 import os
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 
-from flask import Flask, jsonify, render_template, request
+from flask import Flask, Response, jsonify, render_template, request, stream_with_context
 
 from ..config import load_config, path_of
+from ..ingest.replay import replay
+from ..io_utils import read_table
 from ..models.score import score_frame
 from ..models.train import load_bundle
 from ..policy.policy import decide
@@ -143,16 +146,133 @@ def replay_events():
     f = path_of(CFG, "events")
     if not f.exists():
         return jsonify({"events": [], "available": False})
-    opener = gzip.open if f.suffix == ".gz" else open
     events = []
-    with opener(f, "rt", newline="") as fh:
-        reader = csv.DictReader(fh)
-        for i, row in enumerate(reader):
-            if i >= limit:
-                break
-            events.append(row)
-    events.sort(key=lambda r: r.get("ts", ""))
+
+    def _cell(v):
+        if _is_nan(v):
+            return ""
+        if isinstance(v, float) and v.is_integer():
+            return str(int(v))
+        return str(v)
+
+    for row in _load_events().head(limit).to_dict("records"):
+        events.append({k: _cell(v) for k, v in row.items()})
     return jsonify({"events": events, "available": True})
+
+
+# ─── Streaming replay (SSE) ────────────────────────────────────────────────
+# Cache events (dibaca + diurut sekali per file) agar tiap koneksi stream tidak
+# membaca ulang CSV. Di-invalidasi otomatis lewat mtime file.
+_EVENTS_CACHE = {"df": None, "path": None, "mtime": None}
+MIN_EVENT_INTERVAL = 0.016  # jeda minimal antar event (~60/detik) — cegah banjir
+
+
+def _is_nan(v):
+    try:
+        r = v != v
+        return bool(r) if not isinstance(r, (list, tuple)) else False
+    except Exception:
+        return False
+
+
+def _load_events():
+    f = path_of(CFG, "events")
+    if not f.exists():
+        return None
+    mtime = f.stat().st_mtime
+    c = _EVENTS_CACHE
+    if c["df"] is None or c["path"] != str(f) or c["mtime"] != mtime:
+        df = read_table(CFG, "events", ["ts"]).sort_values("ts").reset_index(drop=True)
+        c.update(df=df, path=str(f), mtime=mtime)
+    return c["df"]
+
+
+def _sse_json(obj) -> str:
+    """JSON aman untuk SSE: numpy -> python, NaN -> null, Timestamp -> string."""
+    def clean(o):
+        if o is None or isinstance(o, (str, bool, int)):
+            return o
+        if isinstance(o, float):
+            return None if math.isnan(o) or math.isinf(o) else o
+        if isinstance(o, dict):
+            return {k: clean(v) for k, v in o.items()}
+        if isinstance(o, (list, tuple)):
+            return [clean(v) for v in o]
+        if hasattr(o, "dtype") and hasattr(o, "item"):  # skalar numpy
+            try:
+                return clean(o.item())
+            except Exception:
+                return str(o)
+        if hasattr(o, "hour") and hasattr(o, "isoformat"):  # datetime/Timestamp
+            return o.isoformat(sep=" ")
+        return str(o)
+    return json.dumps(clean(obj), ensure_ascii=False)
+
+
+def _alert_index():
+    """Index (user, day) -> alert dari outputs/alerts.jsonl (precomputed, Kontrak #3)."""
+    return {(a.get("user"), a.get("day")): a for a in _read_alerts(None)}
+
+
+@app.get("/api/replay/stream")
+def replay_stream():
+    """SSE: `for event in replay(ev, speedup): send_to_ui(event)` — persis pola demo.
+
+    Query:
+      speedup      : 1 detik nyata = N detik log (0 = tanpa jeda; server tetap
+                     membatasi ~60 event/detik agar tidak membanjiri browser/proxy)
+      limit        : jumlah event maksimum yang dikirim
+      alerts_only  : 1 -> hanya memancarkan event 'alert' (untuk kanal notifikasi)
+    Setiap kali stream melewati user+tanggal yang ada di outputs/alerts.jsonl,
+    satu event 'alert' dipancarkan (tanpa skor ulang — fitur = agregat user-hari).
+    """
+    limit = int(request.args.get("limit", 1000))
+    speedup = float(request.args.get("speedup", "100") or 0)
+    alerts_only = request.args.get("alerts_only", "") in ("1", "true", "yes")
+
+    df = _load_events()
+    if df is None or len(df) == 0:
+        return jsonify({"events": [], "available": False})
+
+    alerts = _alert_index()
+
+    def gen():
+        sent = 0
+        last = 0.0
+        seen_alerts = set()
+        try:
+            for ev in replay(df, speedup=speedup):
+                if sent >= limit:
+                    break
+                sent += 1
+                evd = dict(ev)
+                # Pacing hanya untuk mode event (ada tampilan yang harus diatur tempo).
+                # Mode alerts_only menyapu secepat mungkin — hanya alert yang dikirim.
+                if not alerts_only:
+                    now = time.monotonic()
+                    if last and now - last < MIN_EVENT_INTERVAL:
+                        time.sleep(MIN_EVENT_INTERVAL - (now - last))
+                    last = time.monotonic()
+                key = (evd.get("user"), str(evd.get("ts"))[:10])
+                a = alerts.get(key)
+                if a is not None and key not in seen_alerts:
+                    seen_alerts.add(key)
+                    yield f"event: alert\ndata: {_sse_json(a)}\n\n"
+                if not alerts_only:
+                    yield f"event: event\ndata: {_sse_json(evd)}\n\n"
+        except GeneratorExit:
+            return  # klien menutup koneksi — hentikan replay
+        yield "event: end\ndata: {}\n\n"
+
+    return Response(
+        stream_with_context(gen()),
+        mimetype="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "X-Accel-Buffering": "no",  # matikan buffering nginx agar stream langsung mengalir
+            "Connection": "keep-alive",
+        },
+    )
 
 
 @app.get("/")

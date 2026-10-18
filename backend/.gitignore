@@ -10,3 +10,4 @@ models/*.joblib
 outputs/*.jsonl
 *.log
 .ipynb_checkpoints/
+outputs/*.json

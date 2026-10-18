@@ -7,11 +7,14 @@ import { cn, fmtDate, RISK_COLOR, riskBand, shortUser, tierStyle } from "./ui";
 type ChannelState = "connecting" | "live" | "offline";
 
 const MAX_ITEMS = 12;
+const SWEEP_INTERVAL_MS = 5 * 60 * 1000; // sapuan ulang berkala (menangkap alerts.jsonl yang diperbarui)
+const MAX_TOASTS_PER_SWEEP = 3;
 
 /**
  * Realtime alert notifications for the whole dashboard.
- * Listens to the backend SSE stream (alerts_only) — one connection per page.
- * Offline / sample mode: stays silent and honestly labeled (preview).
+ * Listens to the backend SSE stream (alerts_only): one full sweep per connect,
+ * deduped across sweeps, then re-sweeps periodically. Offline/sample mode:
+ * stays silent and honestly labeled (preview).
  */
 export default function RealtimeBell() {
   const [items, setItems] = useState<Alert[]>([]);
@@ -21,32 +24,55 @@ export default function RealtimeBell() {
 
   useEffect(() => {
     let es: EventSource | null = null;
-    try {
+    let retry: number | undefined;
+    const seen = new Set<string>();
+    let toasts = 0;
+
+    const connect = () => {
+      toasts = 0;
       es = new EventSource(
-        `${API_BASE}/api/replay/stream?alerts_only=1&speedup=0&limit=5000`,
+        `${API_BASE}/api/replay/stream?alerts_only=1&speedup=0&limit=100000`,
       );
       es.onopen = () => setState("live");
-      es.onerror = () => setState("offline");
+      es.onerror = () => {
+        es?.close();
+        setState("offline");
+        retry = window.setTimeout(connect, SWEEP_INTERVAL_MS);
+      };
+      es.addEventListener("end", () => {
+        // Stream selesai — TUTUP (EventSource reconnect otomatis = badai request).
+        es?.close();
+        setState("live");
+        retry = window.setTimeout(connect, SWEEP_INTERVAL_MS);
+      });
       es.addEventListener("alert", (ev) => {
         try {
           const a = JSON.parse((ev as MessageEvent).data) as Alert;
           if (!a || typeof a.risk !== "number") return;
+          const id = `${a.user}|${a.day}`;
           setState("live");
+          if (seen.has(id)) return; // dedupe antar sapuan
+          seen.add(id);
           setItems((prev) => [a, ...prev].slice(0, MAX_ITEMS));
           setUnread((u) => u + 1);
-          toast(
-            `New tier-${a.tier} alert — user ${shortUser(a.user)} (${a.risk.toFixed(2)})`,
-            a.tier === 3 ? "err" : a.tier === 2 ? "info" : "ok",
-          );
+          // Toast terbatas (tier-3 saja) agar sapuan awal tidak membanjiri.
+          if (a.tier === 3 && toasts < MAX_TOASTS_PER_SWEEP) {
+            toasts += 1;
+            toast(
+              `Tier-3 alert — user ${shortUser(a.user)} (${a.risk.toFixed(2)})`,
+              "err",
+            );
+          }
         } catch {
           /* ignore malformed payload */
         }
       });
-    } catch {
-      setState("offline");
-    }
+    };
+
+    connect();
     return () => {
       es?.close();
+      if (retry) window.clearTimeout(retry);
     };
   }, []);
 
@@ -156,7 +182,7 @@ export default function RealtimeBell() {
           )}
 
           <p className="border-t border-border px-4 py-2 text-[0.62rem] text-text-dark">
-            Delivered via the replay stream (historical playback) — not a live IDS feed.
+            Replay-derived alerts (historical playback, deduped, re-swept periodically) — not a live IDS feed.
           </p>
         </div>
       )}
