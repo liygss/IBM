@@ -7,9 +7,9 @@ import SectionHeading from "./SectionHeading.astro";
 <section id="fitur" class="section scroll-mt-24">
   <div class="container">
     <SectionHeading
-      badge="Fitur & model"
-      title='Perilaku harian, <strong>dua dataset</strong>'
-      subtitle="Satu baris = satu user × satu hari. Setiap fitur punya versi deviasi (z-score) terhadap baseline pribadi 14 hari — tanpa melihat hari ini, jadi bebas leakage."
+      badge="Features & model"
+      title='Daily behavior, <strong>two datasets</strong>'
+      subtitle="One row = one user × one day. Every feature has a deviation version (z-score) against that user's own 14-day baseline — never seeing today, so leakage-free."
     />
 
     <div class="grid gap-6 lg:grid-cols-2">
@@ -35,8 +35,8 @@ import SectionHeading from "./SectionHeading.astro";
               ))}
             </div>
             <p class="mt-auto text-sm text-text">
-              <span class="font-semibold text-white">{fs.zCount} fitur deviasi</span>{" "}
-              diturunkan otomatis · {fs.note}
+              <span class="font-semibold text-white">{fs.zCount} deviation features</span>{" "}
+              auto-derived · {fs.note}
             </p>
           </article>
         ))
@@ -62,10 +62,11 @@ import SectionHeading from "./SectionHeading.astro";
     </div>
 
     <p class="mt-6 rounded-2xl border border-secondary/30 bg-secondary/5 px-6 py-4 text-sm text-text">
-      <strong class="text-secondary">Hasil (placeholder).</strong> Tabel metrik
-      precision/recall @ budget & median days-to-detection diisi tim setelah
-      <code class="mx-1 font-mono text-secondary">outputs/metrics.json</code> ada —
-      angka toy tidak boleh dilaporkan.
+      <strong class="text-secondary">Results (placeholder).</strong> The
+      precision/recall @ budget & median days-to-detection table will be filled
+      by the team once{" "}
+      <code class="mx-1 font-mono text-secondary">outputs/metrics.json</code> exists —
+      toy numbers must not be reported.
     </p>
   </div>
 </section>

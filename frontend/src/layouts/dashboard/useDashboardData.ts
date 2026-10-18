@@ -33,7 +33,7 @@ export interface DashboardData {
   ) => Promise<{ ok: boolean; offline?: boolean }>;
 }
 
-/** Ambil semua data dashboard + auto-refresh via event global "trailguard:refresh". */
+/** Fetch all dashboard data + auto-refresh via the global "trailguard:refresh" event. */
 export function useDashboardData(): DashboardData {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);

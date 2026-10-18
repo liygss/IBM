@@ -45,7 +45,7 @@ export default function ApiStatus() {
           }`}
         />
         <span className={live ? "text-emerald-300" : "text-amber-300"}>
-          {loading ? "Menghubungkan…" : live ? "Live · Flask API" : "Pratinjau · contoh"}
+          {loading ? "Connecting…" : live ? "Live · Flask API" : "Preview · sample"}
         </span>
       </div>
       <div className="mt-1.5 flex items-center gap-1.5 text-[0.68rem] text-text-dark">

@@ -13,7 +13,7 @@ interface Props {
   centerLabel?: string;
 }
 
-/** Donut distribusi (mis. tier) dengan legend interaktif. */
+/** Distribution donut (e.g. tiers) with an interactive legend. */
 export default function DonutChart({
   segments,
   size = 176,
@@ -46,7 +46,7 @@ export default function DonutChart({
         className="relative shrink-0"
         style={{ width: size, height: size }}
         role="img"
-        aria-label="Distribusi alert per tier"
+        aria-label="Alert distribution by tier"
       >
         <svg viewBox={`0 0 ${size} ${size}`} className="size-full -rotate-90">
           <circle

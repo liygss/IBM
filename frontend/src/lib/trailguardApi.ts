@@ -1,7 +1,7 @@
 /**
- * Klien API dashboard TrailGuard.
- * Ambil dari Flask (/api/...) bila tersedia; jika tidak, pakai data contoh (fallback)
- * dan tandai sumbernya 'live' | 'sample' supaya dashboard tetap jujur.
+ * TrailGuard dashboard API client.
+ * Fetches from Flask (/api/...) when available; otherwise uses sample data (fallback)
+ * and tags the source as 'live' | 'sample' so the dashboard stays honest.
  */
 
 const API_BASE: string =
@@ -85,7 +85,7 @@ async function getJson<T>(path: string): Promise<T> {
   return (await res.json()) as T;
 }
 
-// ─── Data contoh (fallback) ─────────────────────────────────────────────────
+// ─── Sample data (fallback) ─────────────────────────────────────────────────
 
 const SAMPLE_ALERTS: Alert[] = [
   {
@@ -97,14 +97,14 @@ const SAMPLE_ALERTS: Alert[] = [
     tier: 3,
     action: "analyst_ticket",
     requires_human_approval: true,
-    note: "Buat tiket analis; tindakan lanjutan wajib disetujui manusia.",
+    note: "Create an analyst ticket; follow-up actions require human approval.",
     reasons: [
-      { feature: "n_new_domain", label: "domain web baru", value: 7, contribution: 0.31 },
-      { feature: "n_usb_connect", label: "pemakaian USB", value: 3, contribution: 0.24 },
-      { feature: "n_offhours_logon", label: "logon di luar jam kerja", value: 5, contribution: 0.18 },
+      { feature: "n_new_domain", label: "new web domains", value: 7, contribution: 0.31 },
+      { feature: "n_usb_connect", label: "USB usage", value: 3, contribution: 0.24 },
+      { feature: "n_offhours_logon", label: "off-hours logons", value: 5, contribution: 0.18 },
     ],
     summary:
-      "Pengguna 7f3ce1b2… pada 2010-03-03 berisiko 0.92 (tier 3: analyst_ticket). Penyebab utama: domain web baru (nilai 7, menambah risiko +0.31); pemakaian USB (nilai 3, menambah risiko +0.24); logon di luar jam kerja (nilai 5, menambah risiko +0.18). Perlu persetujuan analis.",
+      "User 7f3ce1b2… on 2010-03-03 has risk 0.92 (tier 3: analyst_ticket). Main causes: new web domains (value 7, adds risk +0.31); USB usage (value 3, adds risk +0.24); off-hours logons (value 5, adds risk +0.18). Requires analyst approval.",
   },
   {
     user: "a91b0d7e6c2f4410",
@@ -115,13 +115,13 @@ const SAMPLE_ALERTS: Alert[] = [
     tier: 2,
     action: "step_up_verification",
     requires_human_approval: false,
-    note: "Minta verifikasi tambahan saat sesi berikutnya.",
+    note: "Request additional verification on the next session.",
     reasons: [
-      { feature: "email_ext_bytes", label: "volume email ke luar", value: 1400000, contribution: 0.33 },
-      { feature: "n_new_host", label: "komputer yang belum pernah dipakai", value: 2, contribution: 0.19 },
+      { feature: "email_ext_bytes", label: "outbound email volume", value: 1400000, contribution: 0.33 },
+      { feature: "n_new_host", label: "never-seen computer", value: 2, contribution: 0.19 },
     ],
     summary:
-      "Pengguna a91b0d7e… pada 2010-03-04 berisiko 0.71 (tier 2: step_up_verification). Penyebab utama: volume email ke luar (nilai 1400000, menambah risiko +0.33); komputer yang belum pernah dipakai (nilai 2, menambah risiko +0.19).",
+      "User a91b0d7e… on 2010-03-04 has risk 0.71 (tier 2: step_up_verification). Main causes: outbound email volume (value 1400000, adds risk +0.33); a never-seen computer (value 2, adds risk +0.19).",
   },
   {
     user: "0c48be1fa7d93e55",
@@ -132,13 +132,13 @@ const SAMPLE_ALERTS: Alert[] = [
     tier: 1,
     action: "log_only",
     requires_human_approval: false,
-    note: "Catat saja.",
+    note: "Log only.",
     reasons: [
-      { feature: "n_http", label: "kunjungan web", value: 42, z: 2.1 },
-      { feature: "n_file_ops", label: "operasi file", value: 130, z: 1.3 },
+      { feature: "n_http", label: "web visits", value: 42, z: 2.1 },
+      { feature: "n_file_ops", label: "file operations", value: 130, z: 1.3 },
     ],
     summary:
-      "Pengguna 0c48be1f… pada 2010-03-05 berisiko 0.48 (tier 1: log_only). Penyebab utama: kunjungan web (42, +2.1 SD dari kebiasaan); operasi file (130, +1.3 SD dari kebiasaan).",
+      "User 0c48be1f… on 2010-03-05 has risk 0.48 (tier 1: log_only). Main causes: web visits (42, +2.1 SD from habit); file operations (130, +1.3 SD from habit).",
   },
 ];
 

@@ -14,8 +14,8 @@ const tone: Record<string, { bar: string; badge: string; text: string }> = {
   <div class="container">
     <SectionHeading
       badge="Policy · human-in-the-loop"
-      title='Tiga tier, <strong>manusia tetap memegang kendali</strong>'
-      subtitle="Skor risiko 0–1 dipetakan ke respons bertingkat. Sistem tidak pernah memblokir akun otomatis — tindakan berdampak tinggi butuh persetujuan analis."
+      title='Three tiers, <strong>humans stay in control</strong>'
+      subtitle="Risk score 0–1 maps to tiered responses. The system never blocks accounts automatically — high-impact actions require analyst approval."
     />
 
     <div class="grid gap-5 lg:grid-cols-3">
@@ -37,12 +37,12 @@ const tone: Record<string, { bar: string; badge: string; text: string }> = {
                 t.human ? (
                   <>
                     <Icon name="user" class={`size-4 ${tone[t.tone].text}`} />
-                    <span class={tone[t.tone].text}>Wajib persetujuan manusia</span>
+                    <span class={tone[t.tone].text}>Human approval required</span>
                   </>
                 ) : (
                   <>
                     <Icon name="check" class="size-4 text-text-dark" />
-                    <span class="text-text-dark">Otomatis, tanpa tindakan berdampak</span>
+                    <span class="text-text-dark">Automatic, no impactful action</span>
                   </>
                 )
               }
@@ -53,7 +53,7 @@ const tone: Record<string, { bar: string; badge: string; text: string }> = {
     </div>
 
     <p class="mt-8 text-center text-sm text-text-dark">
-      Ambang batas dari <code class="font-mono text-text">configs/config.yaml</code>:
+      Thresholds from <code class="font-mono text-text">configs/config.yaml</code>:
       <span class="font-mono text-text-light"> step_up_threshold: 0.60</span> ·
       <span class="font-mono text-text-light"> ticket_threshold: 0.85</span>
     </p>

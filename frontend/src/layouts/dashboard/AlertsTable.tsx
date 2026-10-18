@@ -108,8 +108,8 @@ export default function AlertsTable() {
     note?: string,
   ) => {
     const res = await decide(a, d, note);
-    if (res.offline) toast("Keputusan tidak tersimpan (API offline).", "err");
-    else toast(d === "approve" ? "Alert disetujui." : "Alert ditolak.", "ok");
+    if (res.offline) toast("Decision not stored (API offline).", "err");
+    else toast(d === "approve" ? "Alert approved." : "Alert rejected.", "ok");
   };
 
   const selectedDecision = selected
@@ -125,14 +125,14 @@ export default function AlertsTable() {
             icon="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Cari pengguna / tanggal…"
+            placeholder="Search user / date…"
             className="w-full sm:w-64"
           />
           <Segmented
             value={tier}
             onChange={setTier}
             options={[
-              { key: "all", label: "Semua", count: alerts.length },
+              { key: "all", label: "All", count: alerts.length },
               { key: "3", label: "Tier 3", count: counts[3] },
               { key: "2", label: "Tier 2", count: counts[2] },
               { key: "1", label: "Tier 1", count: counts[1] },
@@ -140,13 +140,13 @@ export default function AlertsTable() {
           />
           <div className="ml-auto flex flex-wrap items-center gap-2">
             <Select value={approval} onChange={(e) => setApproval(e.target.value as ApprovalFilter)}>
-              <option value="all">Semua status</option>
-              <option value="pending">Menunggu persetujuan</option>
-              <option value="settled">Sudah diputuskan</option>
-              <option value="auto">Otomatis</option>
+              <option value="all">All statuses</option>
+              <option value="pending">Awaiting approval</option>
+              <option value="settled">Decided</option>
+              <option value="auto">Automatic</option>
             </Select>
             <Select value={explain} onChange={(e) => setExplain(e.target.value)}>
-              <option value="all">Semua explain_method</option>
+              <option value="all">All explain_method</option>
               {explainMethods.map((m) => (
                 <option key={m} value={m}>
                   {m}
@@ -154,10 +154,10 @@ export default function AlertsTable() {
               ))}
             </Select>
             <Select value={sort} onChange={(e) => setSort(e.target.value as SortKey)}>
-              <option value="risk-desc">Risiko tertinggi</option>
-              <option value="day-desc">Tanggal terbaru</option>
-              <option value="day-asc">Tanggal terlama</option>
-              <option value="user-asc">Pengguna (A–Z)</option>
+              <option value="risk-desc">Highest risk</option>
+              <option value="day-desc">Newest first</option>
+              <option value="day-asc">Oldest first</option>
+              <option value="user-asc">User (A–Z)</option>
             </Select>
             <Button variant="subtle" size="sm" icon="refresh" onClick={reset}>
               Reset
@@ -166,13 +166,13 @@ export default function AlertsTable() {
         </div>
         <div className="flex items-center justify-between border-t border-border/60 px-4 py-2.5 text-xs text-text-dark">
           <span>
-            Menampilkan{" "}
-            <span className="font-mono text-text">{pageRows.length}</span> dari{" "}
-            <span className="font-mono text-text">{filtered.length}</span> alert
-            {filtered.length !== alerts.length && ` (total ${alerts.length})`}
+            Showing{" "}
+            <span className="font-mono text-text">{pageRows.length}</span> of{" "}
+            <span className="font-mono text-text">{filtered.length}</span> alerts
+            {filtered.length !== alerts.length && ` (of ${alerts.length})`}
           </span>
           <span className="font-mono">
-            halaman {clampedPage}/{pageCount}
+            page {clampedPage}/{pageCount}
           </span>
         </div>
       </Card>
@@ -188,14 +188,14 @@ export default function AlertsTable() {
         ) : alerts.length === 0 ? (
           <EmptyState
             icon="shield"
-            title="Belum ada alert"
-            hint="Jalankan pipeline dulu (make toy), lalu buka dashboard via make api (Flask :8000)."
+            title="No alerts yet"
+            hint="Run the pipeline first (make toy), then open the dashboard via make api (Flask :8000)."
           />
         ) : filtered.length === 0 ? (
           <EmptyState
             icon="search"
-            title="Tidak ada yang cocok"
-            hint="Coba ubah filter atau kata kunci pencarian."
+            title="Nothing matches"
+            hint="Try changing the filters or search terms."
             action={
               <Button variant="ghost" size="sm" icon="refresh" onClick={reset}>
                 Reset filter
@@ -207,10 +207,10 @@ export default function AlertsTable() {
             <table className="w-full min-w-200 text-left text-sm">
               <thead className="sticky top-0 z-10 bg-light/95 text-[0.66rem] uppercase tracking-wide text-text-dark backdrop-blur">
                 <tr className="border-b border-border">
-                  <th className="px-5 py-3 font-medium">Pengguna</th>
-                  <th className="px-4 py-3 font-medium">Tanggal</th>
-                  <th className="px-4 py-3 font-medium">Risiko</th>
-                  <th className="px-4 py-3 font-medium">Tier / aksi</th>
+                  <th className="px-5 py-3 font-medium">User</th>
+                  <th className="px-4 py-3 font-medium">Date</th>
+                  <th className="px-4 py-3 font-medium">Risk</th>
+                  <th className="px-4 py-3 font-medium">Tier / action</th>
                   <th className="px-4 py-3 font-medium">Explain</th>
                   <th className="px-4 py-3 font-medium">Approval</th>
                   <th className="px-4 py-3" />
@@ -261,14 +261,14 @@ export default function AlertsTable() {
                               name={dec.decision === "approve" ? "check" : "x"}
                               className="size-3"
                             />
-                            {dec.decision === "approve" ? "Disetujui" : "Ditolak"}
+                            {dec.decision === "approve" ? "Approved" : "Rejected"}
                           </Badge>
                         ) : a.requires_human_approval ? (
                           <Badge tone="amber">
-                            <Icon name="clock" className="size-3" /> Menunggu
+                            <Icon name="clock" className="size-3" /> Waiting
                           </Badge>
                         ) : (
-                          <span className="text-xs text-text-dark">Otomatis</span>
+                          <span className="text-xs text-text-dark">Automatic</span>
                         )}
                       </td>
                       <td className="px-4 py-3 text-right text-text-dark">
@@ -292,7 +292,7 @@ export default function AlertsTable() {
               disabled={clampedPage <= 1}
               onClick={() => setPage((p) => Math.max(1, p - 1))}
             >
-              Sebelumnya
+              Previous
             </Button>
             <div className="flex items-center gap-1">
               {Array.from({ length: pageCount }).map((_, i) => (
@@ -317,7 +317,7 @@ export default function AlertsTable() {
               disabled={clampedPage >= pageCount}
               onClick={() => setPage((p) => Math.min(pageCount, p + 1))}
             >
-              Berikutnya
+              Next
               <Icon name="chevronRight" className="size-3.5" />
             </Button>
           </div>
@@ -325,9 +325,9 @@ export default function AlertsTable() {
       </Card>
 
       <p className="text-xs text-text-dark">
-        Tier 3 (risiko ≥ 0.85) wajib persetujuan manusia — sistem tidak pernah
-        memblokir akun otomatis. Angka & tier mengikuti Kontrak #3.
-        {source === "sample" && " Menampilkan data contoh (pratinjau)."}
+        Tier 3 (risk ≥ 0.85) requires human approval — the system never blocks
+        accounts automatically. Numbers & tiers follow Contract #3.
+        {source === "sample" && " Showing sample data (preview)."}
       </p>
 
       <AlertDrawer

@@ -8,7 +8,7 @@ interface Props {
   className?: string;
 }
 
-/** Sparkline area-mini untuk kartu statistik. Skala penuh (stretch) horizontal. */
+/** Mini area sparkline for stat cards. Full-width (stretch) horizontal scale. */
 export default function Sparkline({
   data,
   color = "#937AFF",

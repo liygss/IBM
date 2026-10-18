@@ -60,7 +60,7 @@ export function riskBand(risk: number): RiskBand {
   return "low";
 }
 
-/** Warna aksen hex, untuk SVG & teks. */
+/** Hex accent colors, for SVG & text. */
 export const RISK_COLOR: Record<RiskBand, string> = {
   high: "#FF5353",
   mid: "#fbbf24",
@@ -83,9 +83,9 @@ export function cn(...parts: Array<string | false | null | undefined>): string {
 }
 
 export const RISK_LABEL: Record<RiskBand, string> = {
-  high: "kritis",
-  mid: "sedang",
-  low: "rendah",
+  high: "critical",
+  mid: "moderate",
+  low: "low",
 };
 
 const BULAN = [
@@ -117,8 +117,8 @@ export function fmtShortDate(day: string): string {
   return `${d} ${BULAN[m - 1]}`;
 }
 
-/** Boolean → label status approval. */
+/** Boolean → approval status label. */
 export function approvalLabel(requires: boolean): string {
-  return requires ? "Perlu persetujuan" : "Otomatis";
+  return requires ? "Needs approval" : "Automatic";
 }
 

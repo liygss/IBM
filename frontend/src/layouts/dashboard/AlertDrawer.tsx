@@ -58,7 +58,7 @@ export default function AlertDrawer({
         value={note}
         onChange={(e) => setNote(e.target.value)}
         rows={2}
-        placeholder="Catatan analis (opsional)…"
+        placeholder="Analyst note (optional)…"
         className="w-full resize-none rounded-xl border border-border bg-body/50 px-3 py-2 text-sm text-text placeholder:text-text-dark focus:border-primary focus:outline-none"
       />
       <div className="flex gap-2">
@@ -69,7 +69,7 @@ export default function AlertDrawer({
           disabled={busy !== null}
           onClick={() => run("approve")}
         >
-          {busy === "approve" ? "Menyimpan…" : "Setujui"}
+          {busy === "approve" ? "Saving…" : "Approve"}
         </Button>
         <Button
           variant="danger"
@@ -78,13 +78,13 @@ export default function AlertDrawer({
           disabled={busy !== null}
           onClick={() => run("reject")}
         >
-          {busy === "reject" ? "Menyimpan…" : "Tolak"}
+          {busy === "reject" ? "Saving…" : "Reject"}
         </Button>
       </div>
       <p className="text-center text-[0.68rem] text-text-dark">
         {source === "live"
-          ? "Keputusan tersimpan ke outputs/decisions.jsonl"
-          : "Pratinjau — keputusan tidak tersimpan ke server"}
+          ? "Decision stored to outputs/decisions.jsonl"
+          : "Preview — decisions are not stored on the server"}
       </p>
     </div>
   ) : settled && decision ? (
@@ -101,7 +101,7 @@ export default function AlertDrawer({
           name={decision.decision === "approve" ? "check" : "x"}
           className="size-4"
         />
-        {decision.decision === "approve" ? "Disetujui" : "Ditolak"}
+        {decision.decision === "approve" ? "Approved" : "Rejected"}
       </span>
       <span className="font-mono text-xs text-text-dark">
         {decision.ts.slice(0, 16).replace("T", " ")}
@@ -109,7 +109,7 @@ export default function AlertDrawer({
     </div>
   ) : (
     <p className="text-center text-xs text-text-dark">
-      Tier {alert.tier} — tidak butuh persetujuan manusia (otomatis).
+      Tier {alert.tier} — no human approval needed (automatic).
     </p>
   );
 
@@ -137,8 +137,8 @@ export default function AlertDrawer({
             </Badge>
           </div>
           <p className="mt-2 text-xs text-text-dark">
-            Aksi terjadwal: <span className="text-text">{alert.action}</span>
-            {alert.requires_human_approval ? " · wajib persetujuan" : ""}
+            Scheduled action: <span className="text-text">{alert.action}</span>
+            {alert.requires_human_approval ? " · approval required" : ""}
           </p>
         </div>
       </div>
@@ -156,7 +156,7 @@ export default function AlertDrawer({
         <div className="mt-1 flex justify-between text-[0.62rem] text-text-dark">
           <span>0.00</span>
           <span className="text-amber-300">step-up 0.60</span>
-          <span className="text-secondary">tiket 0.85</span>
+          <span className="text-secondary">ticket 0.85</span>
           <span>1.00</span>
         </div>
       </div>
@@ -164,7 +164,7 @@ export default function AlertDrawer({
       {/* summary */}
       <section className="mt-5">
         <h4 className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-text-dark">
-          <Icon name="info" className="size-3.5" /> Ringkasan
+          <Icon name="info" className="size-3.5" /> Summary
         </h4>
         <p className="text-sm leading-6 text-text">{alert.summary}</p>
       </section>
@@ -172,7 +172,7 @@ export default function AlertDrawer({
       {/* reasons */}
       <section className="mt-5">
         <h4 className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-text-dark">
-          <Icon name="spark" className="size-3.5" /> Kontribusi fitur
+          <Icon name="spark" className="size-3.5" /> Feature contributions
         </h4>
         <ul className="space-y-3">
           {alert.reasons.map((r, i) => {
@@ -205,15 +205,15 @@ export default function AlertDrawer({
       {/* feature table */}
       <section className="mt-5">
         <h4 className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-text-dark">
-          <Icon name="layers" className="size-3.5" /> Detail fitur
+          <Icon name="layers" className="size-3.5" /> Feature details
         </h4>
         <div className="overflow-hidden rounded-xl border border-border">
           <table className="w-full text-left text-[0.72rem]">
             <thead className="bg-body/60 text-text-dark">
               <tr>
-                <th className="px-3 py-2 font-medium">fitur</th>
-                <th className="px-3 py-2 font-medium">nilai</th>
-                <th className="px-3 py-2 font-medium">kontribusi</th>
+                <th className="px-3 py-2 font-medium">feature</th>
+                <th className="px-3 py-2 font-medium">value</th>
+                <th className="px-3 py-2 font-medium">contribution</th>
               </tr>
             </thead>
             <tbody>
@@ -242,8 +242,8 @@ export default function AlertDrawer({
 
       {typeof alert.label === "number" && (
         <p className="mt-4 text-[0.68rem] text-text-dark">
-          Label evaluasi (bukan bagian dari skor): <span className="font-mono text-text">{alert.label}</span>{" "}
-          — hanya tersedia di set uji.
+          Evaluation label (not part of the score): <span className="font-mono text-text">{alert.label}</span>{" "}
+          — only available on the test set.
         </p>
       )}
     </Drawer>

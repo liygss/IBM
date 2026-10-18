@@ -481,7 +481,7 @@ export function Drawer({
               <div className="mt-0.5 text-xs text-text-dark">{subtitle}</div>
             )}
           </div>
-          <IconButton icon="x" label="Tutup" onClick={onClose} />
+          <IconButton icon="x" label="Close" onClick={onClose} />
         </header>
         <div className="flex-1 px-5 py-5">{children}</div>
         {footer && (

@@ -87,7 +87,7 @@ function QueueRow({
           disabled={busy !== null}
           onClick={() => run("approve")}
         >
-          {busy === "approve" ? "…" : "Setujui"}
+          {busy === "approve" ? "…" : "Approve"}
         </Button>
         <Button
           size="sm"
@@ -96,7 +96,7 @@ function QueueRow({
           disabled={busy !== null}
           onClick={() => run("reject")}
         >
-          Tolak
+          Reject
         </Button>
       </div>
     </div>
@@ -131,8 +131,8 @@ export default function Overview() {
 
   const onDecide = async (a: Alert, d: "approve" | "reject") => {
     const res = await decide(a, d);
-    if (res.offline) toast("Keputusan tidak tersimpan (API offline).", "err");
-    else toast(d === "approve" ? "Alert disetujui." : "Alert ditolak.", "ok");
+    if (res.offline) toast("Decision not stored (API offline).", "err");
+    else toast(d === "approve" ? "Alert approved." : "Alert rejected.", "ok");
   };
 
   const areaSeries = days.map((d) => ({
@@ -175,9 +175,9 @@ export default function Overview() {
         <div className="flex items-start gap-3 rounded-2xl border border-amber-400/25 bg-amber-400/[0.07] px-4 py-3 text-sm text-amber-200/90">
           <Icon name="info" className="mt-0.5 size-4 shrink-0 text-amber-300" />
           <p>
-            Menampilkan <strong className="text-amber-200">data contoh</strong> —
-            bukan hasil nyata. Jalankan pipeline lalu <code className="font-mono">make api</code>{" "}
-            untuk data sebenarnya dari <code className="font-mono">outputs/</code>.
+            Showing <strong className="text-amber-200">sample data</strong> —
+            not real results. Run the pipeline then <code className="font-mono">make api</code>{" "}
+            for real data from <code className="font-mono">outputs/</code>.
           </p>
         </div>
       )}
@@ -187,7 +187,7 @@ export default function Overview() {
         <StatCard
           label="Precision @ budget"
           value={fmtPct(metrics.precision_at_budget)}
-          hint="dari alert yang ditampilkan"
+          hint="of alerts shown"
           icon="target"
           accent="text-emerald-300"
           bar={metrics.precision_at_budget}
@@ -195,42 +195,42 @@ export default function Overview() {
         <StatCard
           label="Recall @ budget"
           value={fmtPct(metrics.recall_at_budget)}
-          hint="dari user-hari jahat"
+          hint="of malicious user-days"
           icon="gauge"
           accent="text-primary"
           bar={metrics.recall_at_budget}
         />
         <StatCard
-          label="Insider terdeteksi"
+          label="Insiders detected"
           value={`${metrics.insiders_detected ?? "—"} / ${metrics.insiders_in_test ?? "?"}`}
-          hint="di set uji"
+          hint="in the test set"
           icon="user"
         />
         <StatCard
           label="Median days-to-detection"
           value={
             typeof metrics.median_days_to_detection === "number"
-              ? `${metrics.median_days_to_detection} hari`
+              ? `${metrics.median_days_to_detection} days`
               : "—"
           }
-          hint="sejak aktivitas pertama"
+          hint="since first activity"
           icon="clock"
         />
         <StatCard
-          label="Alert ditampilkan"
+          label="Alerts shown"
           value={fmtNum(metrics.n_alerts)}
           hint={
             typeof metrics.alert_budget_per_day === "number"
-              ? `budget ${metrics.alert_budget_per_day}/hari`
+              ? `budget ${metrics.alert_budget_per_day}/day`
               : undefined
           }
           icon="alert"
           spark={days.map((d) => d.count)}
         />
         <StatCard
-          label="User-hari jahat"
+          label="Malicious user-days"
           value={fmtNum(metrics.n_malicious_user_days)}
-          hint="label uji (hanya evaluasi)"
+          hint="test label (evaluation only)"
           icon="layers"
         />
       </section>
@@ -239,8 +239,8 @@ export default function Overview() {
       <section className="grid gap-5 lg:grid-cols-3">
         <Card className="dr-in lg:col-span-2">
           <CardHeader
-            title="Skor risiko dari waktu ke waktu"
-            subtitle="nilai maksimum per hari · ambang 0.60 (step-up) & 0.85 (tiket)"
+            title="Risk score over time"
+            subtitle="daily maximum · thresholds 0.60 (step-up) & 0.85 (ticket)"
             icon="chart"
           />
           <div className="p-5">
@@ -249,8 +249,8 @@ export default function Overview() {
         </Card>
         <Card className="dr-in">
           <CardHeader
-            title="Distribusi tier"
-            subtitle={`${alerts.length} alert · ${pending.length} menunggu`}
+            title="Tier distribution"
+            subtitle={`${alerts.length} alerts · ${pending.length} awaiting`}
             icon="layers"
           />
           <div className="p-5">
@@ -262,22 +262,22 @@ export default function Overview() {
       <section className="grid gap-5 lg:grid-cols-3">
         <Card className="dr-in lg:col-span-2">
           <CardHeader
-            title="Alert per hari"
-            subtitle="warna menunjukkan band risiko maksimum"
+            title="Alerts per day"
+            subtitle="color shows the daily max risk band"
             icon="calendar"
             action={
               <div className="flex items-center gap-3 text-[0.68rem] text-text-dark">
                 <span className="inline-flex items-center gap-1.5">
                   <span className="size-2.5 rounded-sm" style={{ background: RISK_COLOR.high }} />
-                  kritis
+                  critical
                 </span>
                 <span className="inline-flex items-center gap-1.5">
                   <span className="size-2.5 rounded-sm" style={{ background: RISK_COLOR.mid }} />
-                  sedang
+                  moderate
                 </span>
                 <span className="inline-flex items-center gap-1.5">
                   <span className="size-2.5 rounded-sm" style={{ background: RISK_COLOR.low }} />
-                  rendah
+                  low
                 </span>
               </div>
             }
@@ -288,8 +288,8 @@ export default function Overview() {
         </Card>
         <Card className="dr-in">
           <CardHeader
-            title="Metode penjelasan"
-            subtitle="explain_method pada alert"
+            title="Explanation methods"
+            subtitle="explain_method across alerts"
             icon="spark"
           />
           <div className="space-y-4 p-5">
@@ -323,20 +323,20 @@ export default function Overview() {
       <section className="grid gap-5 lg:grid-cols-3">
         <Card className="dr-in lg:col-span-2">
           <CardHeader
-            title="Menunggu persetujuan"
-            subtitle="tier 3 — sistem tidak pernah memblokir otomatis"
+            title="Awaiting approval"
+            subtitle="tier 3 — the system never blocks automatically"
             icon="alert"
             action={
               <Badge tone={pending.length ? "secondary" : "emerald"}>
-                {pending.length} antrian
+                {pending.length} queued
               </Badge>
             }
           />
           {pending.length === 0 ? (
             <EmptyState
               icon="check"
-              title="Tidak ada yang menunggu"
-              hint="Semua alert tier 3 sudah diputuskan."
+              title="Nothing waiting"
+              hint="All tier-3 alerts have been decided."
             />
           ) : (
             <div className="divide-y divide-border/60">
@@ -348,8 +348,8 @@ export default function Overview() {
         </Card>
         <Card className="dr-in">
           <CardHeader
-            title="Pengguna paling berisiko"
-            subtitle="maksimum 5"
+            title="Riskiest users"
+            subtitle="top 5"
             icon="users"
           />
           <div className="space-y-3 p-5">
@@ -379,15 +379,15 @@ export default function Overview() {
       {/* recent alerts */}
       <Card className="dr-in">
         <CardHeader
-          title="Alert terbaru"
-          subtitle="risiko tertinggi dari kumpulan saat ini"
+          title="Latest alerts"
+          subtitle="highest risk in the current set"
           icon="list"
           action={
             <a
               href="/dashboard/alerts"
               className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-text transition hover:border-primary/40 hover:text-white"
             >
-              Lihat semua <Icon name="chevronRight" className="size-3.5" />
+              View all <Icon name="chevronRight" className="size-3.5" />
             </a>
           }
         />
@@ -395,9 +395,9 @@ export default function Overview() {
           <table className="w-full min-w-160 text-left text-sm">
             <thead className="text-[0.68rem] uppercase tracking-wide text-text-dark">
               <tr className="border-b border-border/60">
-                <th className="px-5 py-2.5 font-medium">Pengguna</th>
-                <th className="px-4 py-2.5 font-medium">Tanggal</th>
-                <th className="px-4 py-2.5 font-medium">Risiko</th>
+                <th className="px-5 py-2.5 font-medium">User</th>
+                <th className="px-4 py-2.5 font-medium">Date</th>
+                <th className="px-4 py-2.5 font-medium">Risk</th>
                 <th className="px-4 py-2.5 font-medium">Tier</th>
                 <th className="px-4 py-2.5 font-medium">Explain</th>
               </tr>

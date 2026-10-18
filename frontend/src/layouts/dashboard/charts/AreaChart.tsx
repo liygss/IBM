@@ -71,7 +71,7 @@ export default function AreaChart({
         >
           <p className="font-medium text-white">{fmtDate(hoverP.day)}</p>
           <p className="mt-0.5 font-mono text-text-dark">
-            risiko maks{" "}
+            max risk{" "}
             <span className="text-text">{hoverP.value.toFixed(2)}</span> ·{" "}
             {hoverP.count} alert
           </p>

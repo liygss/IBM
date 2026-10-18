@@ -1,7 +1,7 @@
 /**
- * Sumber tunggal konten landing TrailGuard.
- * Disusun dari repo nyata `trailguard/` + Rencana Proyek v3.1.
- * Model & angka hasil sengaja ditandai "diisi tim" — belum ada hasil nyata.
+ * Single source of truth for TrailGuard landing content.
+ * Compiled from the real `trailguard/` repo + Project Plan v3.1.
+ * Model & result numbers are intentionally marked "to be filled by the team" — no real results yet.
  */
 
 export interface Meta {
@@ -22,9 +22,9 @@ export const meta: Meta = {
   eventCode: "SSF2026",
   theme: "AI Secured — Innovation Without Exposure",
   tagline:
-    "Deteksi insider-threat yang menjaga privasi & bisa dijelaskan — berjalan penuh di IBM LinuxONE.",
+    "Privacy-preserving, explainable insider-threat detection — running entirely on IBM LinuxONE.",
   goal:
-    "Bangun pipeline deteksi insider-threat yang berjalan penuh di LinuxONE, dengan skor risiko yang bisa dijelaskan, ID pengguna ter-pseudonim, dan keputusan akhir di tangan manusia.",
+    "Build an insider-threat detection pipeline that runs entirely on LinuxONE, with explainable risk scores, pseudonymized user IDs, and final decisions kept in human hands.",
   flow: [
     "logs",
     "pseudonymize",
@@ -50,40 +50,40 @@ export const pipelineSteps: PipelineStep[] = [
     id: "ingest",
     cmd: "ingest",
     title: "Ingest & pseudonymize",
-    desc: "Loader CERT/LANL memuat log multi-sumber; identitas langsung di-hash (HMAC-SHA256) saat masuk.",
-    output: "data/interim/events.csv.gz · Kontrak #1",
+    desc: "CERT/LANL loaders ingest multi-source logs; identities are hashed (HMAC-SHA256) right at ingestion.",
+    output: "data/interim/events.csv.gz · Contract #1",
     icon: "lock",
   },
   {
     id: "features",
     cmd: "features",
-    title: "Fitur perilaku harian",
-    desc: "Agregasi per user × hari + deviasi (z-score) terhadap baseline pribadi 14 hari — bebas leakage.",
-    output: "data/processed/features.csv.gz · Kontrak #2",
+    title: "Daily behavior features",
+    desc: "Per user × day aggregation + deviation (z-score) against each user's own 14-day baseline — leakage-free.",
+    output: "data/processed/features.csv.gz · Contract #2",
     icon: "chart",
   },
   {
     id: "train",
     cmd: "train",
-    title: "Latih model hibrida",
-    desc: "Split TEMPORAL: supervised (HistGradientBoosting) + Isolation Forest untuk perilaku baru.",
-    output: "models/bundle.joblib · Kontrak #4",
+    title: "Train hybrid models",
+    desc: "TEMPORAL split: supervised (HistGradientBoosting) + Isolation Forest for novel behavior.",
+    output: "models/bundle.joblib · Contract #4",
     icon: "brain",
   },
   {
     id: "evaluate",
     cmd: "evaluate",
-    title: "Evaluasi alert-budget",
-    desc: "Metrik realistis untuk data langka: precision/recall @ budget + time-to-detection.",
-    output: "outputs/metrics.json · Kontrak #5",
+    title: "Alert-budget evaluation",
+    desc: "Realistic metrics for rare events: precision/recall @ budget + time-to-detection.",
+    output: "outputs/metrics.json · Contract #5",
     icon: "gauge",
   },
   {
     id: "score",
     cmd: "score",
-    title: "Skor, jelaskan, putuskan",
-    desc: "Skor risiko 0–1, penjelasan tiap alert (SHAP/Shapley/deviation), lalu dipetakan ke policy 3 tier.",
-    output: "outputs/alerts.jsonl · Kontrak #3",
+    title: "Score, explain, decide",
+    desc: "Risk score 0–1, per-alert explanation (SHAP/Shapley/deviation), then mapped to the 3-tier policy.",
+    output: "outputs/alerts.jsonl · Contract #3",
     icon: "alert",
   },
 ];
@@ -97,45 +97,45 @@ export interface ModuleItem {
 
 export const modules: ModuleItem[] = [
   {
-    title: "Pseudonimisasi",
+    title: "Pseudonymization",
     path: "ingest/pseudonymize.py",
-    desc: "Keyed hash HMAC-SHA256 (16 hex). Kunci di `.env`, tidak pernah keluar instance.",
+    desc: "HMAC-SHA256 keyed hash (16 hex). The key lives in `.env` and never leaves the instance.",
     icon: "lock",
   },
   {
     title: "Replay stream",
     path: "ingest/replay.py",
-    desc: "Memutar ulang log sebagai aliran event — dinyatakan jujur sebagai replay, bukan real-time.",
+    desc: "Replays logs as an event stream — honestly declared as a replay, not real-time.",
     icon: "play",
   },
   {
-    title: "Penjelasan",
+    title: "Explanations",
     path: "models/explain.py",
-    desc: "shap → shapley (sampling sendiri, efficiency eksak) → deviation. Metode dicatat apa adanya.",
+    desc: "shap → shapley (own sampling, exact efficiency) → deviation. The method used is recorded as-is.",
     icon: "explain",
   },
   {
     title: "Policy",
     path: "policy/policy.py",
-    desc: "Skor → 3 tier respons. Sistem TIDAK pernah memblokir akun otomatis.",
+    desc: "Score → 3 response tiers. The system NEVER blocks accounts automatically.",
     icon: "shield",
   },
   {
-    title: "Ringkasan kasus",
+    title: "Case summaries",
     path: "llm/summarizer.py",
-    desc: "Template bahasa manusia (default). Hanya menerima field ter-pseudonim.",
+    desc: "Plain-language template (default). Accepts only pseudonymized fields.",
     icon: "doc",
   },
   {
     title: "API + dashboard",
     path: "api/app.py",
-    desc: "Flask :8000 — /health, /api/alerts, /api/metrics, POST /api/score, halaman alert.",
+    desc: "Flask :8000 — /health, /api/alerts, /api/metrics, POST /api/score, alert page.",
     icon: "server",
   },
   {
     title: "Container",
     path: "deploy/Dockerfile",
-    desc: "python:3.11-slim (fallback ubi9/python-311). Data & kunci di-mount, tidak ikut ke image.",
+    desc: "python:3.11-slim (fallback ubi9/python-311). Data & keys are mounted, never baked into the image.",
     icon: "box",
   },
   {
@@ -160,14 +160,14 @@ export const contracts: DataContract[] = [
     file: "data/interim/events.csv.gz",
     maker: "ingest (loader + pseudonymize)",
     consumer: "features",
-    note: "Tidak ada ID asli. user & host = keyed-hash, 16 hex.",
+    note: "No real IDs. user & host = keyed-hash, 16 hex.",
   },
   {
     id: "#2",
     file: "data/processed/features.csv.gz",
-    maker: "Grup B",
+    maker: "Group B",
     consumer: "model · API · benchmark",
-    note: "1 baris = 1 user × 1 hari; fitur dasar + deviasi, label 0/1.",
+    note: "1 row = 1 user × 1 day; base features + deviations, label 0/1.",
   },
   {
     id: "#3",
@@ -179,16 +179,16 @@ export const contracts: DataContract[] = [
   {
     id: "#4",
     file: "models/bundle.joblib",
-    maker: "Grup B",
+    maker: "Group B",
     consumer: "score · explain · API",
-    note: "Dilatih & dimuat di mesin yang sama (pickle s390x).",
+    note: "Trained & loaded on the same machine (s390x pickle).",
   },
   {
     id: "#5",
     file: "outputs/metrics.json · benchmark.json",
-    maker: "Grup B · Grup A",
+    maker: "Group B · Group A",
     consumer: "README · video",
-    note: "Semua angka yang dipublikasikan harus bisa ditelusuri ke sini.",
+    note: "Every published number must be traceable back here.",
   },
 ];
 
@@ -200,28 +200,28 @@ export interface Principle {
 
 export const principles: Principle[] = [
   {
-    title: "Selalu ada versi yang jalan",
-    desc: "`main` harus lolos `make toy` kapan pun. Data tiruan (toy) membuat semua grup bisa bekerja paralel.",
+    title: "Always a working version",
+    desc: "`main` must pass `make toy` at any time. Toy data lets every group work in parallel.",
     icon: "check",
   },
   {
-    title: "Kontrak data dulu, kode kemudian",
-    desc: "Antar-grup hanya berkomunikasi lewat file yang disepakati di Kontrak Data (#1–#5).",
+    title: "Data contracts first, code second",
+    desc: "Groups communicate only through the agreed Data Contracts (#1–#5).",
     icon: "layers",
   },
   {
-    title: "Klaim hanya yang terbukti jalan",
-    desc: "Istilah seperti “SHAP” atau “Parquet” tidak ditulis bila belum terbukti berjalan di LinuxONE.",
+    title: "Only claim what actually works",
+    desc: "Terms like “SHAP” or “Parquet” are not written until they are proven to run on LinuxONE.",
     icon: "shield",
   },
   {
-    title: "Potong scope lebih awal",
-    desc: "Keputusan potong dibuat di Gate, bukan di akhir. MoSCoW memandu prioritas.",
+    title: "Cut scope early",
+    desc: "Cut decisions happen at the Gate, not at the end. MoSCoW guides priorities.",
     icon: "scissors",
   },
   {
-    title: "Semua orang lulus Linux survival",
-    desc: "Setiap anggota (bukan hanya Grup A) melewati checklist dasar Linux & LinuxONE lebih dulu.",
+    title: "Everyone passes Linux survival",
+    desc: "Every member (not just Group A) completes the basic Linux & LinuxONE checklist first.",
     icon: "terminal",
   },
 ];
@@ -238,33 +238,33 @@ export const scope: ScopeLevel[] = [
     level: "MUST",
     tone: "must",
     items: [
-      "Jalan di LinuxONE",
-      "Pseudonimisasi",
-      "Fitur harian",
+      "Runs on LinuxONE",
+      "Pseudonymization",
+      "Daily features",
       "Isolation Forest + supervised",
-      "Skor risiko",
-      "Policy 3 tier (human approval)",
-      "Dashboard sederhana",
-      "Evaluasi alert-budget + time-to-detection",
-      "Dua dataset: CERT + LANL (subset)",
-      "Penjelasan berbasis nilai Shapley (implementasi sendiri)",
+      "Risk score",
+      "3-tier policy (human approval)",
+      "Simple dashboard",
+      "Alert-budget evaluation + time-to-detection",
+      "Two datasets: CERT + LANL (subset)",
+      "Shapley-value based explanations (own implementation)",
     ],
-    limit: "Wajib selesai",
+    limit: "Required to finish",
   },
   {
-    level: 'TARGET — klaim "SHAP"',
+    level: 'TARGET — the "SHAP" claim',
     tone: "target",
-    items: ["Library `shap` jalan di s390x", "pyarrow / Parquet"],
-    limit: "Go/no-go di Gate 1",
+    items: ["Library `shap` runs on s390x", "pyarrow / Parquet"],
+    limit: "Go/no-go at Gate 1",
   },
   {
     level: "SHOULD",
     tone: "should",
     items: [
-      "Container jalan",
-      "Benchmark latensi/throughput",
-      "Pembanding baseline di evaluasi",
-      "LANL: evaluasi lengkap dengan pembanding",
+      "Container runs",
+      "Latency/throughput benchmark",
+      "Baseline comparison in the evaluation",
+      "LANL: full evaluation with a comparison baseline",
     ],
     limit: "Gate 2 / Gate 3",
   },
@@ -272,9 +272,9 @@ export const scope: ScopeLevel[] = [
     level: "COULD",
     tone: "could",
     items: [
-      "LLM kecil untuk ringkasan",
-      "Replay live dengan kecepatan",
-      "Tombol approve/reject di dashboard",
+      "Small LLM for case summaries",
+      "Live replay with speed control",
+      "Approve/reject buttons in the dashboard",
     ],
     limit: "Gate 3",
   },
@@ -282,23 +282,23 @@ export const scope: ScopeLevel[] = [
     level: "WON'T",
     tone: "wont",
     items: [
-      "LANL penuh (1 miliar baris, ±7 GB gz) di VM",
+      "Full LANL (1 billion rows, ~7 GB gz) on the VM",
       "Deep learning",
-      "Otentikasi multi-user",
+      "Multi-user authentication",
     ],
-    limit: "Di luar scope",
+    limit: "Out of scope",
   },
   {
-    level: "DITUNDA",
+    level: "DEFERRED",
     tone: "deferred",
     items: [
-      "Screenshot bukti",
-      "README final",
-      "Bagian Limitations",
-      "Video demo",
+      "Evidence screenshots",
+      "Final README",
+      "Limitations section",
+      "Demo video",
       "Submission",
     ],
-    limit: "Dibagi setelah Gate 3",
+    limit: "Split after Gate 3",
   },
 ];
 
@@ -311,38 +311,38 @@ export interface Decision {
 export const decisions: Decision[] = [
   {
     id: "D1",
-    decision: "Flask (bukan FastAPI/Streamlit)",
-    reason: "Pure-Python; menghindari pydantic-core/pyarrow yang berisiko di s390x.",
+    decision: "Flask (not FastAPI/Streamlit)",
+    reason: "Pure-Python; avoids pydantic-core/pyarrow, which are risky on s390x.",
   },
   {
     id: "D2",
-    decision: "Data antar-langkah CSV.gz default; Parquet opsional",
-    reason: "pyarrow berisiko di s390x; pipeline fallback otomatis dengan peringatan.",
+    decision: "CSV.gz between steps by default; Parquet optional",
+    reason: "pyarrow is risky on s390x; the pipeline falls back automatically with a warning.",
   },
   {
     id: "D3",
     decision: "Supervised = HistGradientBoostingClassifier (sklearn)",
-    reason: "Tanpa dependensi tambahan; ringan untuk LinuxONE.",
+    reason: "No extra dependencies; light enough for LinuxONE.",
   },
   {
     id: "D4",
-    decision: "Target klaim SHAP. Urutan: shap → shapley → deviation",
-    reason: "Klaim wajib sesuai metode yang benar-benar jalan (kolom explain_method).",
+    decision: "SHAP is a target claim. Order: shap → shapley → deviation",
+    reason: "Claims must match the method that actually ran (explain_method column).",
   },
   {
     id: "D5",
-    decision: "LANL tetap di scope sebagai subset (prefilter streaming)",
-    reason: "Data penuh tak layak di VM; pipeline terpisah config_lanl.yaml.",
+    decision: "LANL stays in scope as a subset (streaming prefilter)",
+    reason: "Full data is not viable on the VM; separate pipeline via config_lanl.yaml.",
   },
   {
     id: "D6",
-    decision: "Split TEMPORAL + metrik alert-budget & time-to-detection",
-    reason: "Data sangat langka; menghindari leakage masa depan.",
+    decision: "TEMPORAL split + alert-budget & time-to-detection metrics",
+    reason: "Extremely rare data; avoids future leakage.",
   },
   {
     id: "D7",
-    decision: "Replay = simulasi stream, dinyatakan jujur",
-    reason: "Klaim “real-time” harus bisa dibuktikan dengan angka.",
+    decision: "Replay = stream simulation, honestly declared",
+    reason: "A “real-time” claim must be backed by numbers.",
   },
 ];
 
@@ -373,10 +373,10 @@ export const featureSets: FeatureSet[] = [
       "email_ext_bytes",
     ],
     zCount: 12,
-    note: "12 fitur dasar + 12 deviasi (z-score baseline 14 hari per user).",
+    note: "12 base features + 12 deviations (14-day baseline z-score per user).",
   },
   {
-    dataset: "LANL (kredensial curian)",
+    dataset: "LANL (stolen credentials)",
     file: "features/builder_lanl.py",
     base: [
       "n_auth",
@@ -391,7 +391,7 @@ export const featureSets: FeatureSet[] = [
       "n_night",
     ],
     zCount: 10,
-    note: "10 fitur dasar + 10 deviasi. `n_night` hanyalah proxy (waktu LANL anonim).",
+    note: "10 base features + 10 deviations. `n_night` is only a proxy (LANL timestamps are anonymous).",
   },
 ];
 
@@ -402,11 +402,11 @@ export interface ModelFact {
 }
 
 export const modelFacts: ModelFact[] = [
-  { label: "Split", value: "Temporal (bukan acak) — 65% train / 35% test", icon: "clock" },
-  { label: "Supervised", value: "HistGradientBoostingClassifier + bobot kelas", icon: "brain" },
-  { label: "Anomali", value: "IsolationForest, dilatih pada perilaku normal", icon: "radar" },
-  { label: "Gabungan skor", value: "risk = 0.6 · p_supervised + 0.4 · p_anomali", icon: "merge" },
-  { label: "Evaluasi", value: "Alert-budget 5/hari · precision/recall · median days-to-detection", icon: "gauge" },
+  { label: "Split", value: "Temporal (not random) — 65% train / 35% test", icon: "clock" },
+  { label: "Supervised", value: "HistGradientBoostingClassifier + class weights", icon: "brain" },
+  { label: "Anomaly", value: "IsolationForest, trained on normal behavior", icon: "radar" },
+  { label: "Score blend", value: "risk = 0.6 · p_supervised + 0.4 · p_anomaly", icon: "merge" },
+  { label: "Evaluation", value: "Alert budget 5/day · precision/recall · median days-to-detection", icon: "gauge" },
 ];
 
 export interface ExplainMethod {
@@ -420,19 +420,19 @@ export const explainMethods: ExplainMethod[] = [
   {
     name: "SHAP library",
     method: "shap",
-    desc: "shap.Explainer + model-agnostik. Butuh paket shap (numba/llvmlite) — diuji di s390x dulu.",
+    desc: "shap.Explainer + model-agnostic. Requires the shap package (numba/llvmlite) — must be tested on s390x first.",
     tone: "ok",
   },
   {
-    name: "Shapley (implementasi sendiri)",
+    name: "Shapley (own implementation)",
     method: "shapley",
-    desc: "Sampling permutasi, pure NumPy. Efficiency berlaku eksak: Σ kontribusi + base = f(x).",
+    desc: "Permutation sampling, pure NumPy. Exact efficiency holds: Σ contributions + base = f(x).",
     tone: "neutral",
   },
   {
-    name: "Deviasi",
+    name: "Deviation",
     method: "deviation",
-    desc: "Fallback terakhir: seberapa jauh fitur menyimpang dari kebiasaan user (z-score).",
+    desc: "Last resort: how far features deviate from the user's usual behavior (z-score).",
     tone: "warn",
   },
 ];
@@ -445,34 +445,34 @@ export interface ClaimRule {
 
 export const claimRules: ClaimRule[] = [
   {
-    claim: "Berjalan di LinuxONE",
-    allowed: "Ada screenshot uname/lscpu menunjukkan Architecture: s390x",
-    forbidden: "Hanya jalan di laptop",
+    claim: "Runs on LinuxONE",
+    allowed: "uname/lscpu screenshot showing Architecture: s390x",
+    forbidden: "Only runs on a laptop",
   },
   {
     claim: '"SHAP"',
-    allowed: "explain_method == \"shap\" di alerts + [OK] shap di shap_pyarrow_check.txt",
-    forbidden: "explain_method == \"shapley\" → tulis “Shapley-value explanations (implementasi sendiri)”",
+    allowed: "explain_method == \"shap\" in alerts + [OK] shap in shap_pyarrow_check.txt",
+    forbidden: "explain_method == \"shapley\" → write “Shapley-value explanations (own implementation)”",
   },
   {
     claim: '"Parquet / pyarrow"',
-    allowed: "[OK] pyarrow + io.format: parquet benar-benar dipakai",
-    forbidden: "pyarrow gagal / fallback ke CSV.gz",
+    allowed: "[OK] pyarrow + io.format: parquet actually used",
+    forbidden: "pyarrow failed / fell back to CSV.gz",
   },
   {
-    claim: '"Dua dataset"',
-    allowed: "Hasil CERT dan LANL dari metrics.json / lanl_metrics.json",
-    forbidden: "Mengklaim LANL penuh (1 miliar baris) diproses",
+    claim: '"Two datasets"',
+    allowed: "CERT and LANL results from metrics.json / lanl_metrics.json",
+    forbidden: "Claiming full LANL (1 billion rows) was processed",
   },
   {
     claim: "Privacy-preserving",
-    allowed: "“Mengurangi eksposur lewat pseudonimisasi”",
-    forbidden: "Mengklaim jaminan privasi formal / differential privacy",
+    allowed: "“Reduces exposure through pseudonymization”",
+    forbidden: "Claiming formal privacy guarantees / differential privacy",
   },
   {
     claim: '"Near real-time"',
-    allowed: "Ada angka latensi per event + dijelaskan sebagai replay",
-    forbidden: "Menulis “real-time” tanpa pengukuran",
+    allowed: "Per-event latency numbers exist + described as a replay",
+    forbidden: "Writing “real-time” without measurement",
   },
 ];
 
@@ -490,7 +490,7 @@ export const policyTiers: PolicyTier[] = [
     tier: 1,
     action: "log_only",
     range: "risk < 0.60",
-    desc: "Catat saja. Tidak ada tindakan otomatis.",
+    desc: "Log only. No automatic action.",
     human: false,
     tone: "t1",
   },
@@ -498,7 +498,7 @@ export const policyTiers: PolicyTier[] = [
     tier: 2,
     action: "step_up_verification",
     range: "0.60 ≤ risk < 0.85",
-    desc: "Minta verifikasi tambahan saat sesi berikutnya.",
+    desc: "Request additional verification on the next session.",
     human: false,
     tone: "t2",
   },
@@ -506,7 +506,7 @@ export const policyTiers: PolicyTier[] = [
     tier: 3,
     action: "analyst_ticket",
     range: "risk ≥ 0.85",
-    desc: "Buat tiket analis; tindakan lanjutan WAJIB disetujui manusia.",
+    desc: "Create an analyst ticket; follow-up actions MUST be approved by a human.",
     human: true,
     tone: "t3",
   },
@@ -524,7 +524,7 @@ export interface SampleAlert {
   reasons: { label: string; detail: string }[];
 }
 
-/** Contoh alert (bentuk Kontrak #3) untuk pratinjau dashboard — bukan hasil nyata. */
+/** Sample alert (Contract #3 shape) for the dashboard preview — not real results. */
 export const sampleAlerts: SampleAlert[] = [
   {
     user: "7f3ce1b2c497fb5c",
@@ -535,11 +535,11 @@ export const sampleAlerts: SampleAlert[] = [
     human: true,
     explainMethod: "shap",
     summary:
-      "Risiko 0.92 (tier 3: analyst_ticket). Perlu persetujuan analis. Pemicu utama: domain web baru, pemakaian USB, logon di luar jam kerja.",
+      "Risk 0.92 (tier 3: analyst_ticket). Requires analyst approval. Main triggers: new web domains, USB usage, off-hours logons.",
     reasons: [
-      { label: "domain web baru", detail: "nilai 7 · +0.31" },
-      { label: "pemakaian USB", detail: "nilai 3 · +0.24" },
-      { label: "logon di luar jam kerja", detail: "nilai 5 · +0.18" },
+      { label: "new web domain", detail: "value 7 · +0.31" },
+      { label: "USB usage", detail: "value 3 · +0.24" },
+      { label: "off-hours logon", detail: "value 5 · +0.18" },
     ],
   },
   {
@@ -551,10 +551,10 @@ export const sampleAlerts: SampleAlert[] = [
     human: false,
     explainMethod: "shapley",
     summary:
-      "Risiko 0.71 (tier 2: step_up_verification). Pemicu utama: email ke luar organisasi (volume besar), komputer baru.",
+      "Risk 0.71 (tier 2: step_up_verification). Main triggers: large outbound email volume, a never-seen computer.",
     reasons: [
-      { label: "volume email ke luar", detail: "nilai 1.4e6 · +0.33" },
-      { label: "komputer yang belum pernah dipakai", detail: "nilai 2 · +0.19" },
+      { label: "outbound email volume", detail: "value 1.4e6 · +0.33" },
+      { label: "never-seen computer", detail: "value 2 · +0.19" },
     ],
   },
   {
@@ -566,10 +566,10 @@ export const sampleAlerts: SampleAlert[] = [
     human: false,
     explainMethod: "deviation",
     summary:
-      "Risiko 0.48 (tier 1: log_only). Menyimpang dari kebiasaan: kunjungan web (+2.1 SD), operasi file (+1.3 SD).",
+      "Risk 0.48 (tier 1: log_only). Deviating from habit: web visits (+2.1 SD), file operations (+1.3 SD).",
     reasons: [
-      { label: "kunjungan web", detail: "2.1 SD" },
-      { label: "operasi file", detail: "1.3 SD" },
+      { label: "web visits", detail: "2.1 SD" },
+      { label: "file operations", detail: "1.3 SD" },
     ],
   },
 ];
@@ -585,23 +585,23 @@ export interface Dataset {
 export const datasets: Dataset[] = [
   {
     name: "CMU CERT Insider Threat",
-    kind: "Utama · sintetis",
-    detail: "Multi-sumber: logon, device, file, http, email (+ LDAP & psychometric).",
+    kind: "Primary · synthetic",
+    detail: "Multi-source: logon, device, file, http, email (+ LDAP & psychometric).",
     points: [
-      "Versi r4.2; folder answers/ menandai insider",
-      "Besar (terutama http.csv) — batasi dengan max_rows_per_file",
-      "Sintetis → tidak mewakili jaringan produksi (sebut di Limitations)",
+      "Version r4.2; the answers/ folder marks insiders",
+      "Large (http.csv especially) — cap it with max_rows_per_file",
+      "Synthetic → does not represent production networks (say so in Limitations)",
     ],
     icon: "database",
   },
   {
     name: "LANL Cyber-Security Events",
-    kind: "Kedua · subset",
-    detail: "Log autentikasi de-identifikasi (±58 hari) + label red-team.",
+    kind: "Secondary · subset",
+    detail: "De-identified authentication logs (~58 days) + red-team labels.",
     points: [
-      "auth.txt.gz ±1 miliar baris / ±7 GB gz — JANGAN dimuat penuh",
-      "Prefilter streaming: semua user korban red-team + sampel 2% user lain",
-      "Waktu anonim (hanya relatif); label sangat sedikit — laporkan apa adanya",
+      "auth.txt.gz ~1 billion rows / ~7 GB gz — do NOT load it fully",
+      "Streaming prefilter: all red-team victim users + a 2% sample of others",
+      "Time is anonymous (relative only); very few labels — report as-is",
     ],
     icon: "network",
   },
@@ -615,23 +615,23 @@ export interface DeployItem {
 
 export const deploy: DeployItem[] = [
   {
-    title: "Platform s390x",
-    desc: "LinuxONE Community Cloud. Verifikasi dengan uname/lscpu: Architecture: s390x.",
+    title: "s390x platform",
+    desc: "LinuxONE Community Cloud. Verify with uname/lscpu: Architecture: s390x.",
     icon: "server",
   },
   {
     title: "Container",
-    desc: "python:3.11-slim (fallback ubi9/python-311). Data & model di-mount; log mentah & kunci tidak ikut ke image.",
+    desc: "python:3.11-slim (fallback ubi9/python-311). Data & model are mounted; raw logs & keys never go into the image.",
     icon: "box",
   },
   {
-    title: "Nginx statis",
-    desc: "Landing ini dibangun jadi berkas statis (dist/) dan disajikan nginx — cocok untuk VM LinuxONE.",
+    title: "Static nginx",
+    desc: "This landing page builds to static files (dist/) and is served by nginx — a natural fit for a LinuxONE VM.",
     icon: "globe",
   },
   {
-    title: "R17 — tooling Node",
-    desc: "Bila npm/build bermasalah di s390x: bangun di laptop lalu salin dist/ ke VM, atau sajikan via Flask.",
+    title: "R17 — Node tooling",
+    desc: "If npm/build misbehaves on s390x: build on a laptop then copy dist/ to the VM, or serve via Flask.",
     icon: "alert",
   },
 ];
@@ -643,15 +643,15 @@ export interface EvidenceItem {
 
 export const evidenceItems: EvidenceItem[] = [
   { id: "01", title: "uname -a + lscpu (Architecture: s390x)" },
-  { id: "02", title: "free -h, df -h, nproc (sumber daya VM)" },
-  { id: "03", title: "make run selesai di VM (log & waktu)" },
+  { id: "02", title: "free -h, df -h, nproc (VM resources)" },
+  { id: "03", title: "make run finished on the VM (log & timing)" },
   { id: "04", title: "podman/docker ps + curl /health" },
-  { id: "05", title: "Dashboard (via tunnel) dengan alert & tier" },
+  { id: "05", title: "Dashboard (via tunnel) with alerts & tiers" },
   { id: "06", title: "metrics.json & benchmark.json" },
-  { id: "07", title: "top/htop saat benchmark (CPU/memori)" },
-  { id: "08", title: "Bukti pseudonimisasi + .env tidak di repo" },
-  { id: "09", title: "shap_pyarrow_check.txt (bukti klaim / fallback)" },
-  { id: "10", title: "Ukuran subset LANL & log prefilter" },
+  { id: "07", title: "top/htop during the benchmark (CPU/memory)" },
+  { id: "08", title: "Evidence of pseudonymization + .env not in the repo" },
+  { id: "09", title: "shap_pyarrow_check.txt (claim proof / fallback)" },
+  { id: "10", title: "LANL subset size & prefilter log" },
 ];
 
 export interface RoleGroup {
@@ -665,24 +665,24 @@ export const teamRoles: RoleGroup[] = [
     group: "A — Platform & Deploy",
     icon: "server",
     roles: [
-      { name: "A-Platform", focus: "Lingkungan LinuxONE: SSH, Python, paket, data di VM, bukti sistem" },
-      { name: "A-Deploy", focus: "Container, benchmark performa, Makefile, bukti keamanan" },
+      { name: "A-Platform", focus: "LinuxONE environment: SSH, Python, packages, data on the VM, system evidence" },
+      { name: "A-Deploy", focus: "Containers, performance benchmark, Makefile, security evidence" },
     ],
   },
   {
     group: "B — Data & Model",
     icon: "brain",
     roles: [
-      { name: "B-Data", focus: "Loader CERT/LANL, pembentukan fitur, kualitas data" },
-      { name: "B-Model", focus: "Model hibrida, tuning, evaluasi jujur, penjelasan alert" },
+      { name: "B-Data", focus: "CERT/LANL loaders, feature building, data quality" },
+      { name: "B-Model", focus: "Hybrid model, tuning, honest evaluation, alert explanations" },
     ],
   },
   {
-    group: "C — Integrasi & Produk",
+    group: "C — Integration & Product",
     icon: "layers",
     roles: [
-      { name: "C-Lead (PM)", focus: "Pipeline, pseudonimisasi, policy, API; menjaga Gate & Decision Log" },
-      { name: "C-Demo", focus: "Dashboard, replay, ringkasan kasus, README, video & submission" },
+      { name: "C-Lead (PM)", focus: "Pipeline, pseudonymization, policy, API; keeps Gates & the Decision Log" },
+      { name: "C-Demo", focus: "Dashboard, replay, case summaries, README, video & submission" },
     ],
   },
 ];
@@ -696,67 +696,67 @@ export interface Stage {
 
 export const stages: Stage[] = [
   {
-    tag: "Tahap 0",
-    title: "Siaga",
+    tag: "Stage 0",
+    title: "Ready",
     kind: "stage",
     points: [
-      "A1 SSH + make check (catat OS/Python/RAM/disk)",
-      "B1 unduh & pahami CERT",
-      "C1 repo, .env, kunci HMAC",
+      "A1 SSH + make check (record OS/Python/RAM/disk)",
+      "B1 download & understand CERT",
+      "C1 repo, .env, HMAC key",
     ],
   },
   {
-    tag: "Tahap 1",
-    title: "Fondasi",
+    tag: "Stage 1",
+    title: "Foundation",
     kind: "stage",
     points: [
       "A2 make setup / make toy / make lanl-toy",
       "A3 go/no-go SHAP & pyarrow",
-      "C8 mulai review; baca kontrak data",
+      "C8 start review; read the data contracts",
     ],
   },
   {
     tag: "Gate 1",
-    title: "Fondasi terbukti",
+    title: "Foundation proven",
     kind: "gate",
     points: [
-      "make toy & make lanl-toy sukses di LinuxONE",
-      "Keputusan SHAP & pyarrow dicatat",
-      "Tes Node/npm (React) di VM dicatat",
+      "make toy & make lanl-toy succeed on LinuxONE",
+      "SHAP & pyarrow decisions recorded",
+      "Node/npm (React) tests on the VM recorded",
     ],
   },
   {
-    tag: "Tahap 2",
-    title: "Data nyata + baseline",
+    tag: "Stage 2",
+    title: "Real data + baseline",
     kind: "stage",
     points: [
-      "A5 data CERT ke VM · A11 unduh+prefilter LANL",
-      "B2/B3 loader & fitur CERT asli",
-      "C3a halaman utama (data toy)",
+      "A5 CERT data to the VM · A11 download+prefilter LANL",
+      "B2/B3 real CERT loader & features",
+      "C3a main pages (toy data)",
     ],
   },
   {
     tag: "Checkpoint LANL",
-    title: "Subset LANL terbentuk",
+    title: "LANL subset ready",
     kind: "checkpoint",
-    points: ["data/raw/lanl_sub/ ada & ukurannya dicatat", "B-Data bisa memakainya"],
+    points: ["data/raw/lanl_sub/ exists & its size is recorded", "B-Data can use it"],
   },
   {
     tag: "Gate 2",
     title: "End-to-end",
     kind: "gate",
     points: [
-      "CERT (sampel) end-to-end → alert tampil di dashboard",
-      "Pipeline LANL end-to-end pada subset",
+      "CERT (sample) end-to-end → alerts visible in the dashboard",
+      "LANL pipeline end-to-end on the subset",
     ],
   },
   {
-    tag: "Tahap 3",
-    title: "Perbaiki & hubungkan",
+    tag: "Stage 3",
+    title: "Polish & wire up",
     kind: "stage",
     points: [
-      "Container, benchmark, evaluasi + pembanding",
-      "Policy final, ringkasan kasus, approve/reject",
+      "Container, benchmark, evaluation + comparison",
+      "Final policy, case summaries, approve/reject",
     ],
   },
   {
@@ -764,8 +764,8 @@ export const stages: Stage[] = [
     title: "FEATURE FREEZE",
     kind: "gate",
     points: [
-      "Setelah ini hanya bug fix + pekerjaan yang ditunda",
-      "Bukti, dokumentasi, video dibagi (§8)",
+      "After this only bug fixes + deferred work",
+      "Evidence, documentation, video split (§8)",
     ],
   },
 ];
@@ -779,42 +779,42 @@ export interface Risk {
 }
 
 export const risks: Risk[] = [
-  { id: "R1", risk: "Paket ML gagal terpasang di s390x (big-endian, tak ada wheel)", impact: "Tinggi", mitigation: "Inti pakai paket ringan (sklearn/pandas/flask). Fallback: HistGradientBoosting, Shapley sendiri / deviasi", owner: "A" },
-  { id: "R2", risk: "Scope terlalu besar", impact: "Tinggi", mitigation: "MoSCoW; Gate memutuskan potong", owner: "PM" },
-  { id: "R3", risk: "VM terbatas (RAM/CPU/disk) vs data besar", impact: "Sedang", mitigation: "Sampel CERT; max_rows_per_file; cek free -h", owner: "A+B" },
-  { id: "R4", risk: "Koneksi SSH putus, proses mati", impact: "Sedang", mitigation: "Selalu jalankan di tmux", owner: "A" },
-  { id: "R5", risk: "Format label/file CERT asli beda dari toy", impact: "Sedang", mitigation: "B menyesuaikan loader.py di tahap 2", owner: "B" },
-  { id: "R6", risk: "Bukti LinuxONE tidak cukup nanti", impact: "Sedang", mitigation: "make evidence berkala sebagai arsip; pembagian screenshot menunggu §8", owner: "A-Deploy" },
-  { id: "R7", risk: "Klaim berlebihan (real-time, SHAP, privasi formal)", impact: "Sedang", mitigation: "Aturan klaim §3b; dashboard menampilkan explain_method apa adanya", owner: "C" },
-  { id: "R8", risk: "Bug integrasi menit terakhir", impact: "Tinggi", mitigation: "Feature freeze di Gate 3; main selalu hijau", owner: "PM" },
-  { id: "R9", risk: "Kunci/token bocor ke GitHub", impact: "Tinggi", mitigation: ".gitignore, .env tak di-commit, cek sebelum push", owner: "C-Lead" },
-  { id: "R10", risk: "Pelanggaran aturan orisinalitas", impact: "Fatal", mitigation: "Lihat bagian Integritas di 04_SUBMISSION_CHECKLIST.md", owner: "Semua" },
-  { id: "R11", risk: "LANL ±7 GB / 1 miliar baris: disk/RAM/waktu tak cukup", impact: "Tinggi", mitigation: "Prefilter streaming; ukur --max-lines; cek df -h; Checkpoint LANL", owner: "A-Deploy + B-Data" },
-  { id: "R12", risk: "shap/numba/llvmlite tak bisa dipasang → klaim SHAP gagal", impact: "Sedang", mitigation: "Go/no-go Gate 1; fallback Shapley sendiri; klaim ikut explain_method", owner: "A-Platform + B-Model" },
-  { id: "R13", risk: "LANL: label red-team sedikit & waktu anonim → metrik tidak stabil", impact: "Sedang", mitigation: "Laporkan jumlah positif apa adanya + interval; jangan dibulatkan", owner: "B-Model" },
-  { id: "R14", risk: "Bentrok api/templates/", impact: "—", mitigation: "Tidak berlaku lagi — seluruh dashboard dipegang C-Demo", owner: "—" },
-  { id: "R17", risk: "Node/npm atau esbuild/rollup bermasalah di s390x, atau registry tak terjangkau", impact: "Sedang", mitigation: "Tes npm install && npm run build di A3b; cadangan: build di laptop, salin dist ke VM", owner: "A-Platform + C-Demo" },
-  { id: "R15", risk: "PM adalah AI: tidak memantau Discord/Git/VM sendiri", impact: "Sedang", mitigation: "Relay stand-up tiap Gate (format §8); Decision Log jadi memori", owner: "C-Lead" },
-  { id: "R16", risk: "Beban tidak seimbang / salah perkiraan", impact: "Sedang", mitigation: "Periksa ulang di Gate 1; geser tugas lewat PM & catat di Decision Log", owner: "PM" },
+  { id: "R1", risk: "ML packages fail to install on s390x (big-endian, no wheels)", impact: "High", mitigation: "Core stays light (sklearn/pandas/flask). Fallback: HistGradientBoosting, own Shapley / deviation", owner: "A" },
+  { id: "R2", risk: "Scope too large", impact: "High", mitigation: "MoSCoW; the Gate decides cuts", owner: "PM" },
+  { id: "R3", risk: "VM limits (RAM/CPU/disk) vs large data", impact: "Medium", mitigation: "CERT sampling; max_rows_per_file; check free -h", owner: "A+B" },
+  { id: "R4", risk: "SSH drops, processes die", impact: "Medium", mitigation: "Always run inside tmux", owner: "A" },
+  { id: "R5", risk: "Real CERT label/file format differs from toy", impact: "Medium", mitigation: "B adapts loader.py at Stage 2", owner: "B" },
+  { id: "R6", risk: "Not enough LinuxONE evidence later", impact: "Medium", mitigation: "Periodic make evidence as archive; screenshot split waits for §8", owner: "A-Deploy" },
+  { id: "R7", risk: "Overclaiming (real-time, SHAP, formal privacy)", impact: "Medium", mitigation: "Claim rules §3b; dashboard shows explain_method as-is", owner: "C" },
+  { id: "R8", risk: "Last-minute integration bugs", impact: "High", mitigation: "Feature freeze at Gate 3; main always green", owner: "PM" },
+  { id: "R9", risk: "Keys/tokens leak to GitHub", impact: "High", mitigation: ".gitignore, .env never committed, check before push", owner: "C-Lead" },
+  { id: "R10", risk: "Originality rule violations", impact: "Fatal", mitigation: "See the Integrity section in 04_SUBMISSION_CHECKLIST.md", owner: "Everyone" },
+  { id: "R11", risk: "LANL ~7 GB / 1B rows: disk/RAM/time not enough", impact: "High", mitigation: "Streaming prefilter; measure --max-lines; check df -h; Checkpoint LANL", owner: "A-Deploy + B-Data" },
+  { id: "R12", risk: "shap/numba/llvmlite cannot be installed → SHAP claim fails", impact: "Medium", mitigation: "Go/no-go at Gate 1; fallback own Shapley; claim follows explain_method", owner: "A-Platform + B-Model" },
+  { id: "R13", risk: "LANL: few red-team labels & anonymous time → unstable metrics", impact: "Medium", mitigation: "Report positive counts as-is + intervals; do not round away", owner: "B-Model" },
+  { id: "R14", risk: "api/templates/ conflict", impact: "—", mitigation: "No longer applicable — the whole dashboard is owned by C-Demo", owner: "—" },
+  { id: "R17", risk: "Node/npm or esbuild/rollup problems on s390x, or registry unreachable", impact: "Medium", mitigation: "Test npm install && npm run build at A3b; fallback: build on a laptop, copy dist to the VM", owner: "A-Platform + C-Demo" },
+  { id: "R15", risk: "PM is an AI: does not monitor Discord/Git/VM by itself", impact: "Medium", mitigation: "Standard stand-up relay per Gate (format §8); Decision Log as memory", owner: "C-Lead" },
+  { id: "R16", risk: "Unbalanced workload / misestimates", impact: "Medium", mitigation: "Re-check at Gate 1; move tasks via PM & record in the Decision Log", owner: "PM" },
 ];
 
 export const dod: string[] = [
-  "make toy dan make lanl-toy berjalan di LinuxONE",
-  "Pipeline data CERT (sampel) & subset LANL berjalan end-to-end di LinuxONE",
-  "make ui membangun dashboard React di VM",
-  "Dashboard menampilkan alert + alasan + tier + status persetujuan; halaman demo menampilkan replay",
-  "outputs/metrics.json, lanl_metrics.json & benchmark.json berisi angka nyata dari LinuxONE",
-  "docs/06_ARSITEKTUR_KEAMANAN.md selesai",
-  "main hijau (make toy + make lanl-toy lulus)",
+  "make toy and make lanl-toy run on LinuxONE",
+  "CERT (sample) & LANL subset pipelines run end-to-end on LinuxONE",
+  "make ui builds the React dashboard on the VM",
+  "Dashboard shows alerts + reasons + tier + approval status; the demo page shows the replay",
+  "outputs/metrics.json, lanl_metrics.json & benchmark.json contain real numbers from LinuxONE",
+  "docs/06_ARSITEKTUR_KEAMANAN.md completed",
+  "main is green (make toy + make lanl-toy pass)",
 ];
 
 export const deferred: string[] = [
-  "Screenshot bukti LinuxONE dan arsip make evidence",
-  "Bagian “Limitations” (data sintetis, subset & anonimisasi LANL, kelangkaan label, risiko leakage)",
-  "Review klaim akhir (cocokkan dengan explain_method & shap_pyarrow_check.txt)",
-  "README final",
-  "Video demo",
-  "Submission dan dry-run (04_SUBMISSION_CHECKLIST.md)",
+  "LinuxONE evidence screenshots and the make evidence archive",
+  "“Limitations” section (synthetic data, LANL subset & anonymization, label scarcity, leakage risk)",
+  "Final claim review (match against explain_method & shap_pyarrow_check.txt)",
+  "Final README",
+  "Demo video",
+  "Submission & dry-run (04_SUBMISSION_CHECKLIST.md)",
 ];
 
 export const stack: string[] = [

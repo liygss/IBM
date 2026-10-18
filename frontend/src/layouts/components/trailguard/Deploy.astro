@@ -4,12 +4,12 @@ import Icon from "./Icon.astro";
 import SectionHeading from "./SectionHeading.astro";
 
 const commands = [
-  { c: "bash scripts/00_check_env.sh", d: "cek arsitektur & tools (harap s390x)" },
-  { c: "bash scripts/01_setup_env.sh", d: "venv + dependensi" },
-  { c: "make toy", d: "data tiruan + pipeline penuh (< 1 menit)" },
+  { c: "bash scripts/00_check_env.sh", d: "check architecture & tools (expect s390x)" },
+  { c: "bash scripts/01_setup_env.sh", d: "venv + dependencies" },
+  { c: "make toy", d: "toy data + full pipeline (< 1 min)" },
   { c: "make shap-check", d: "go/no-go SHAP & pyarrow" },
-  { c: "make api", d: "dashboard di :8000" },
-  { c: "make container", d: "build & jalankan di podman/docker" },
+  { c: "make api", d: "dashboard on :8000" },
+  { c: "make container", d: "build & run with podman/docker" },
 ];
 ---
 
@@ -17,8 +17,8 @@ const commands = [
   <div class="container">
     <SectionHeading
       badge="Deployment · IBM LinuxONE"
-      title='Berjalan di <strong>s390x</strong>, terkontainer'
-      subtitle="Seluruh pipeline dan dashboard berjalan di dalam instance LinuxONE. Landing statis ini disajikan nginx di VM."
+      title='Runs on <strong>s390x</strong>, containerized'
+      subtitle="The whole pipeline and dashboard run inside a LinuxONE instance. This static landing is served by nginx on the VM."
     />
 
     <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
@@ -41,7 +41,7 @@ const commands = [
       <div class="overflow-hidden rounded-3xl border border-border bg-body">
         <div class="flex items-center gap-2 border-b border-border bg-light px-5 py-3">
           <Icon name="terminal" class="size-4 text-primary" />
-          <span class="font-mono text-xs text-text-dark">di VM LinuxONE</span>
+          <span class="font-mono text-xs text-text-dark">on the LinuxONE VM</span>
         </div>
         <div class="divide-y divide-border/60">
           {
@@ -57,28 +57,28 @@ const commands = [
 
       <div class="flex flex-col justify-center rounded-3xl border border-border bg-light p-8">
         <h3 class="mb-4 font-secondary text-h5 font-bold text-white">
-          Kenapa aman untuk privasi
+          Why it is privacy-safe
         </h3>
         <ul class="space-y-4 text-sm text-text">
           <li class="flex gap-3">
             <Icon name="lock" class="mt-0.5 size-5 shrink-0 text-primary" />
             <span>
-              Kunci HMAC di <code class="font-mono text-xs">.env</code>; data
-              mentah & kunci <strong>tidak</strong> ikut ke dalam image container.
+              HMAC key lives in <code class="font-mono text-xs">.env</code>; raw
+              data & the key do <strong>not</strong> go into the container image.
             </span>
           </li>
           <li class="flex gap-3">
             <Icon name="shield" class="mt-0.5 size-5 shrink-0 text-primary" />
             <span>
-              Identitas di-hash saat ingestion (HMAC-SHA256, 16 hex) — dashboard
-              hanya menampilkan ID ter-pseudonim.
+              Identities are hashed at ingestion (HMAC-SHA256, 16 hex) — the
+              dashboard only shows pseudonymized IDs.
             </span>
           </li>
           <li class="flex gap-3">
             <Icon name="server" class="mt-0.5 size-5 shrink-0 text-primary" />
             <span>
-              Model di-<em>pickle</em> & dimuat di arsitektur yang sama
-              (LinuxONE) — latih dan muat di mesin yang sama.
+              The model is <em>pickled</em> & loaded on the same architecture
+              (LinuxONE) — train and load on the same machine.
             </span>
           </li>
         </ul>

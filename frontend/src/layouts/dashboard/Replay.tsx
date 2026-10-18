@@ -107,7 +107,7 @@ export default function Replay() {
                 source === "live" ? "animate-pulse bg-emerald-400" : "bg-amber-400",
               )}
             />
-            {source === "live" ? "Live · Flask API" : "Pratinjau · contoh"}
+            {source === "live" ? "Live · Flask API" : "Preview · sample"}
           </Badge>
 
           <div className="ml-auto flex flex-wrap items-center gap-3">
@@ -118,7 +118,7 @@ export default function Replay() {
               disabled={loading || events.length === 0}
               onClick={playing ? stop : play}
             >
-              {playing ? "Jeda" : done ? "Ulang" : "Putar"}
+              {playing ? "Pause" : done ? "Restart" : "Play"}
             </Button>
             <Button
               variant="ghost"
@@ -129,7 +129,7 @@ export default function Replay() {
                 setIndex(events.length);
               }}
             >
-              Lompat ke akhir
+              Jump to end
             </Button>
             <Segmented
               value={speed}
@@ -179,7 +179,7 @@ export default function Replay() {
                 <Icon name="route" className="size-6" />
               </span>
               <p className="font-secondary text-base font-bold text-white">
-                Belum ada event untuk diputar
+                No events to play yet
               </p>
               <code className="mt-3 inline-block rounded-lg bg-body px-4 py-2 font-mono text-sm text-primary">
                 make toy
@@ -236,14 +236,14 @@ export default function Replay() {
       </Card>
 
       <div className="space-y-2 text-xs text-text-dark">
-        <p>Event ter-pseudonim (Kontrak #1). ID asli tidak pernah ditampilkan.</p>
+        <p>Pseudonymized events (Contract #1). Real IDs are never shown.</p>
         {!available && !loading && (
           <p>
-            Data event asli belum ada — ini contoh. Untuk data nyata:{" "}
+            Real event data is not available yet — this is a sample. For real data:{" "}
             <code className="font-mono text-text">
               python -m trailguard.pipeline ingest
             </code>{" "}
-            lalu muat ulang.
+            then reload.
           </p>
         )}
       </div>

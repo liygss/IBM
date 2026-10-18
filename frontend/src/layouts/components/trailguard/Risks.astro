@@ -3,8 +3,8 @@ import { risks } from "@/data/trailguard";
 import SectionHeading from "./SectionHeading.astro";
 
 const impact: Record<string, string> = {
-  Tinggi: "bg-secondary/15 text-secondary",
-  Sedang: "bg-amber-400/15 text-amber-300",
+  High: "bg-secondary/15 text-secondary",
+  Medium: "bg-amber-400/15 text-amber-300",
   Fatal: "bg-secondary/25 text-secondary",
   "—": "bg-white/5 text-text-dark",
 };
@@ -13,9 +13,9 @@ const impact: Record<string, string> = {
 <section id="risiko" class="section scroll-mt-24">
   <div class="container">
     <SectionHeading
-      badge="Manajemen risiko"
-      title='Yang bisa <strong>menggagalkan</strong> proyek'
-      subtitle="Setiap risiko punya mitigasi dan pemilik. Risiko tinggi (R1, R8, R9, R11) dijaga ketat lewat Gate."
+      badge="Risk management"
+      title='What can <strong>break</strong> the project'
+      subtitle="Every risk has a mitigation and an owner. High risks (R1, R8, R9, R11) are tightly guarded through the Gates."
     />
 
     <div class="overflow-hidden rounded-3xl border border-border">
@@ -24,10 +24,10 @@ const impact: Record<string, string> = {
           <thead class="bg-light text-xs uppercase tracking-wide text-text-dark">
             <tr>
               <th class="px-5 py-4 font-semibold">#</th>
-              <th class="px-5 py-4 font-semibold">Risiko</th>
-              <th class="px-5 py-4 font-semibold">Dampak</th>
-              <th class="px-5 py-4 font-semibold">Mitigasi</th>
-              <th class="px-5 py-4 font-semibold">Pemilik</th>
+              <th class="px-5 py-4 font-semibold">Risk</th>
+              <th class="px-5 py-4 font-semibold">Impact</th>
+              <th class="px-5 py-4 font-semibold">Mitigation</th>
+              <th class="px-5 py-4 font-semibold">Owner</th>
             </tr>
           </thead>
           <tbody>

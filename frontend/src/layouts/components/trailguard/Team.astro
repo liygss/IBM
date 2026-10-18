@@ -7,9 +7,9 @@ import SectionHeading from "./SectionHeading.astro";
 <section id="tim" class="section scroll-mt-24">
   <div class="container">
     <SectionHeading
-      badge="Tim & tanggung jawab"
-      title='6 orang, 3 grup, <strong>kepemilikan file jelas</strong>'
-      subtitle="Setiap grup berisi 2 peran berbeda yang saling menjadi cadangan. Hindari bentrok di Git dengan hanya mengubah file milik sendiri."
+      badge="Team & responsibilities"
+      title='6 people, 3 groups, <strong>clear file ownership</strong>'
+      subtitle="Each group holds 2 different roles that back each other up. Avoid Git conflicts by only editing your own files."
     />
 
     <div class="grid gap-5 lg:grid-cols-3">
@@ -42,34 +42,35 @@ import SectionHeading from "./SectionHeading.astro";
     <div class="mt-10 grid gap-5 md:grid-cols-3">
       <div class="rounded-2xl border border-border bg-light/60 p-6">
         <h4 class="mb-2 font-secondary text-h6 font-bold text-white">
-          Branch per peran
+          Branches per role
         </h4>
         <p class="text-sm leading-6 text-text">
           <code class="font-mono text-xs text-text-light">a-platform/…</code>{" "}
           <code class="font-mono text-xs text-text-light">b-model/…</code>{" "}
           <code class="font-mono text-xs text-text-light">c-lead/…</code> — merge
-          ke <code class="font-mono text-xs">main</code> lewat PR kecil, direview
-          grup lain.
+          into <code class="font-mono text-xs">main</code> via small PRs, reviewed
+          by other groups.
         </p>
       </div>
       <div class="rounded-2xl border border-border bg-light/60 p-6">
         <h4 class="mb-2 font-secondary text-h6 font-bold text-white">
-          main selalu hijau
+          main stays green
         </h4>
         <p class="text-sm leading-6 text-text">
-          Sebelum merge, <code class="font-mono text-xs text-text-light">make toy</code>{" "}
-          harus sukses. Jangan commit data besar,{" "}
-          <code class="font-mono text-xs">.env</code>, atau model{" "}
-          <code class="font-mono text-xs">.joblib</code>.
+          Before merging,{" "}
+          <code class="font-mono text-xs text-text-light">make toy</code>{" "}
+          must succeed. Do not commit large data,{" "}
+          <code class="font-mono text-xs">.env</code>, or{" "}
+          <code class="font-mono text-xs">.joblib</code> models.
         </p>
       </div>
       <div class="rounded-2xl border border-border bg-light/60 p-6">
         <h4 class="mb-2 font-secondary text-h6 font-bold text-white">
-          PM = menjaga Gate
+          PM = keeps the Gates
         </h4>
         <p class="text-sm leading-6 text-text">
-          Stand-up dikirim ke PM di tiap Gate & Checkpoint LANL; Decision Log
-          menjadi memori keputusan proyek.
+          Stand-ups are sent to the PM at every Gate & the LANL Checkpoint; the
+          Decision Log is the project's decision memory.
         </p>
       </div>
     </div>
