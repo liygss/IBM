@@ -19,7 +19,15 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 
-from flask import Flask, Response, jsonify, render_template, request, stream_with_context
+from flask import (
+    Flask,
+    Response,
+    jsonify,
+    render_template,
+    request,
+    send_from_directory,
+    stream_with_context,
+)
 
 from ..config import load_config, path_of
 from ..ingest.replay import replay
@@ -275,9 +283,38 @@ def replay_stream():
     )
 
 
+# ─── Penyajian dashboard-ui (hasil `make ui`) ──────────────────────────────
+# static/ diisi dengan menyalin hasil build dashboard-ui/dist (lihat Makefile).
+# Bila static/ belum ada, `/` tetap menyajikan dashboard lama (templates/).
+STATIC_DIR = Path(__file__).resolve().parent / "static"
+
+
 @app.get("/")
 def index():
+    if (STATIC_DIR / "index.html").exists():
+        return send_from_directory(STATIC_DIR, "index.html")
     return render_template("index.html")
+
+
+@app.get("/legacy")
+def legacy():
+    """Dashboard lama (templates/index.html) — tetap tersedia apa adanya."""
+    return render_template("index.html")
+
+
+@app.get("/<path:rel>")
+def static_files(rel):
+    """Berkas statis dashboard-ui (halaman & aset ter-hash). Route API tetap prioritas."""
+    if rel.startswith("api/") or rel == "health":
+        return jsonify({"error": "not found"}), 404
+    target = (STATIC_DIR / rel).resolve()
+    if str(target).startswith(str(STATIC_DIR)) and target.is_file():
+        return send_from_directory(STATIC_DIR, rel)
+    if (STATIC_DIR / f"{rel}.html").is_file():  # mis. /dashboard -> dashboard.html
+        return send_from_directory(STATIC_DIR, f"{rel}.html")
+    if (STATIC_DIR / rel / "index.html").is_file():  # mis. /dashboard -> dashboard/index.html
+        return send_from_directory(STATIC_DIR, f"{rel}/index.html")
+    return jsonify({"error": "not found"}), 404
 
 
 if __name__ == "__main__":

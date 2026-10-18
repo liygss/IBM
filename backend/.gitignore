@@ -11,3 +11,5 @@ outputs/*.jsonl
 *.log
 .ipynb_checkpoints/
 outputs/*.json
+node_modules/
+src/trailguard/api/static/

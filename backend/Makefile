@@ -25,8 +25,13 @@ test:            ## jalankan tes
 	$(PY) -m pytest -q tests
 api:             ## jalankan dashboard di :8000
 	$(PY) -m trailguard.api.app
-ui:              ## build dashboard/landing (Astro) -> ../frontend/dist
-	cd ../frontend && npm run build
+ui:              ## salin hasil build dashboard-ui (dist) -> static (untuk VM / Node tua)
+	rm -rf src/trailguard/api/static
+	mkdir -p src/trailguard/api/static
+	cp -r ../frontend/dist/. src/trailguard/api/static/
+	@echo "static UI siap: src/trailguard/api/static (buka http://127.0.0.1:8000/)"
+ui-build:        ## bangun dashboard-ui dari sumber (butuh Node >=18; di s390x pakai R17: build di laptop)
+	cd ../frontend && npm ci && npm run build
 bench:           ## ukur latensi & throughput
 	$(PY) scripts/benchmark_latency.py
 container:       ## build & jalankan container
