@@ -1,6 +1,7 @@
 # Pintasan perintah. Ketik `make help`.
 export PYTHONPATH := src
-PY := python3
+# Pakai .venv bila sudah dibuat (make setup); kalau tidak, python3 sistem.
+PY := $(shell [ -x .venv/bin/python ] && echo .venv/bin/python || echo python3)
 
 help:            ## tampilkan bantuan
 	@grep -E '^[a-z-]+:.*##' Makefile | sed 's/:.*##/ -/'
