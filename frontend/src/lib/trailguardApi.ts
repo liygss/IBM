@@ -4,7 +4,7 @@
  * and tags the source as 'live' | 'sample' so the dashboard stays honest.
  */
 
-const API_BASE: string =
+export const API_BASE: string =
   (import.meta.env.PUBLIC_API_URL as string | undefined) ?? "";
 
 export interface Reason {

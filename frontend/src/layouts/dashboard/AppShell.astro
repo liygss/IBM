@@ -1,6 +1,7 @@
 ---
 import ApiStatus from "@/layouts/dashboard/ApiStatus";
 import NavIcon from "@/layouts/dashboard/NavIcon.astro";
+import RealtimeBell from "@/layouts/dashboard/RealtimeBell";
 import { ToastHost } from "@/layouts/dashboard/primitives";
 
 export interface Props {
@@ -233,6 +234,7 @@ const primaryAction = isReplay
             </p>
           )
         }
+        <RealtimeBell client:load />
         <button
           id="dr-refresh"
           type="button"

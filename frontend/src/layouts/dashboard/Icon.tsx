@@ -48,6 +48,8 @@ const PATHS: Record<string, string> = {
     '<path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h9M17 18h3"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="15" cy="18" r="2"/>',
   info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/>',
   dot: '<circle cx="12" cy="12" r="3.5"/>',
+  bell:
+    '<path d="M6 9a6 6 0 0 1 12 0c0 5 2 6 2 6H4s2-1 2-6"/><path d="M10 19a2 2 0 0 0 4 0"/>',
   inbox:
     '<path d="M3 12h4l2 3h6l2-3h4"/><path d="M5 5h14l2 7v6a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-6l2-7Z"/>',
   pencil: '<path d="M12 20h9"/><path d="M16.5 3.5 20 7l-11 11H5v-4l11.5-11.5Z"/>',
