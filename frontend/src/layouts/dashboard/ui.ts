@@ -64,7 +64,7 @@ export function riskBand(risk: number): RiskBand {
 export const RISK_COLOR: Record<RiskBand, string> = {
   high: "#FF5353",
   mid: "#fbbf24",
-  low: "#937AFF",
+  low: "#60a5fa",
 };
 
 export const RISK_TEXT: Record<RiskBand, string> = {

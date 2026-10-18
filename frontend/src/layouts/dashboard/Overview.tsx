@@ -1,8 +1,8 @@
 import React, { useMemo, useState } from "react";
 import type { Alert } from "@/lib/trailguardApi";
-import { byDay, explainCounts, tierCounts, topUsers } from "./aggregate";
+import { byDay, byDayBand, explainCounts, tierCounts, topUsers } from "./aggregate";
 import AreaChart from "./charts/AreaChart";
-import BarChart from "./charts/BarChart";
+import StackedBarChart from "./charts/StackedBarChart";
 import DonutChart from "./charts/DonutChart";
 import Icon from "./Icon";
 import {
@@ -114,6 +114,19 @@ export default function Overview() {
   } = useDashboardData();
 
   const days = useMemo(() => byDay(alerts), [alerts]);
+  const stacked = useMemo(() => byDayBand(alerts), [alerts]);
+  const bandTotals = useMemo(
+    () =>
+      stacked.reduce(
+        (acc, d) => ({
+          critical: acc.critical + d.critical,
+          moderate: acc.moderate + d.moderate,
+          low: acc.low + d.low,
+        }),
+        { critical: 0, moderate: 0, low: 0 },
+      ),
+    [stacked],
+  );
   const tiers = useMemo(() => tierCounts(alerts), [alerts]);
   const users = useMemo(() => topUsers(alerts, 5), [alerts]);
   const explains = useMemo(() => explainCounts(alerts), [alerts]);
@@ -140,15 +153,10 @@ export default function Overview() {
     value: d.maxRisk,
     count: d.count,
   }));
-  const barData = days.map((d) => ({
-    day: d.day,
-    count: d.count,
-    band: d.band,
-  }));
   const tierSegments = [
-    { label: "tier 3 · tiket", value: tiers[3], color: RISK_COLOR.high },
+    { label: "tier 3 · ticket", value: tiers[3], color: RISK_COLOR.high },
     { label: "tier 2 · step-up", value: tiers[2], color: RISK_COLOR.mid },
-    { label: "tier 1 · log", value: tiers[1], color: "#71717a" },
+    { label: "tier 1 · log", value: tiers[1], color: RISK_COLOR.low },
   ];
   const maxExplain = Math.max(...explains.map((e) => e.count), 1);
 
@@ -263,27 +271,27 @@ export default function Overview() {
         <Card className="dr-in lg:col-span-2">
           <CardHeader
             title="Alerts per day"
-            subtitle="color shows the daily max risk band"
+            subtitle="stacked by risk band · tier 3 on top · tier 1 at the bottom"
             icon="calendar"
             action={
               <div className="flex items-center gap-3 text-[0.68rem] text-text-dark">
                 <span className="inline-flex items-center gap-1.5">
                   <span className="size-2.5 rounded-sm" style={{ background: RISK_COLOR.high }} />
-                  critical
+                  critical <span className="font-mono text-text">{bandTotals.critical}</span>
                 </span>
                 <span className="inline-flex items-center gap-1.5">
                   <span className="size-2.5 rounded-sm" style={{ background: RISK_COLOR.mid }} />
-                  moderate
+                  moderate <span className="font-mono text-text">{bandTotals.moderate}</span>
                 </span>
                 <span className="inline-flex items-center gap-1.5">
                   <span className="size-2.5 rounded-sm" style={{ background: RISK_COLOR.low }} />
-                  low
+                  low <span className="font-mono text-text">{bandTotals.low}</span>
                 </span>
               </div>
             }
           />
           <div className="p-5">
-            <BarChart data={barData} />
+            <StackedBarChart data={stacked} />
           </div>
         </Card>
         <Card className="dr-in">

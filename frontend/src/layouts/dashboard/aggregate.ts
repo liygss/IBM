@@ -70,3 +70,32 @@ export function explainCounts(alerts: Alert[]): { method: string; count: number 
     .map(([method, count]) => ({ method, count }))
     .sort((a, b) => b.count - a.count);
 }
+
+export interface DayBandAgg {
+  day: string;
+  total: number;
+  critical: number;
+  moderate: number;
+  low: number;
+}
+
+/**
+ * Jumlah alert per hari per band risiko (untuk stacked bar chart).
+ * Band ≡ tier (ambang 0.60/0.85 sama): critical=tier3, moderate=tier2, low=tier1.
+ */
+export function byDayBand(alerts: Alert[]): DayBandAgg[] {
+  const map = new Map<string, DayBandAgg>();
+  for (const a of alerts) {
+    let cur = map.get(a.day);
+    if (!cur) {
+      cur = { day: a.day, total: 0, critical: 0, moderate: 0, low: 0 };
+      map.set(a.day, cur);
+    }
+    cur.total += 1;
+    const band = riskBand(a.risk);
+    if (band === "high") cur.critical += 1;
+    else if (band === "mid") cur.moderate += 1;
+    else cur.low += 1;
+  }
+  return [...map.values()].sort((a, b) => a.day.localeCompare(b.day));
+}
